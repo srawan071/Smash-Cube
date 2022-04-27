@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dependencies>
+    <androidPackages>
+        <repositories>
+            <repository>https://android-sdk.is.com</repository>
+            <repository>https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea</repository>
+            <repository>https://artifact.bytedance.com/repository/pangle</repository>
+            <repository>https://anythink.jfrog.io/artifactory/android_sdk</repository>
+            <repository>http://mvn.bepic.cc/repository/maven-releases</repository>
+            <repository>https://sdk.tapjoy.com</repository>
+        </repositories>
+        <androidPackage spec="com.simplesdk:SimpleNativeBase:0.1.11" />
+        <androidPackage spec="com.simplesdk:SimpleNativeMax:0.1.11" />
+        <androidPackage spec="com.simplesdk:SimpleNativeAndroidSDK:0.1.11" />
+        <!-- 选择 Appsflyer 或者 adjust 请分别选择不同的依赖  -->
+<!--        <androidPackage spec="com.simplesdk:SimpleNativeAppsflyer:0.1.11" />-->
+        <androidPackage spec="com.simplesdk:SimpleNativeAdjust:0.1.11" />
+        
+        <!-- 打开后可使用登录支付等内容  -->
+        <!--<androidPackage spec="com.simplesdk:SimpleNativeUserPayment:0.1.11" />
+        <androidPackage spec="com.simplesdk:SimpleNativeFacebookLogin:0.1.11" />
+        <androidPackage spec="com.simplesdk:SimpleNativeGooglePlayLogin:0.1.11" />-->
+        
+    </androidPackages>
+    <iosPods>
+        <!-- V2 版本依赖 -->
+        <iosPod name="SimpleNativeV2CoreIOSSDK" minTargetSdk="10.0"  version="0.1.13" />
+        <!-- adjust 或者 appsflyer选择一个 -->
+        <iosPod name="SimpleNativeV2AdjustIOSSDK" minTargetSdk="10.0"  version="0.1.13" />
+<!--        <iosPod name="SimpleNativeV2AppsflyerIOSSDK" minTargetSdk="10.0"  version="0.1.13" />-->
+        <!-- 需要广告请打开下面这个 -->
+        <iosPod name="SimpleNativeV2MaxAdIOSSDK" minTargetSdk="10.0"  version="0.1.13" />
+        <!-- 需要登录支付请打开下面这个 -->
+<!--        <iosPod name="SimpleNativeV2UserPaymentIOSSDK" minTargetSdk="10.0"  version="0.1.13" />-->
+    </iosPods>
+</dependencies>
