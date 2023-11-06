@@ -18,6 +18,7 @@ public class GameData : MonoBehaviour
     public static GameData Instance;
     public PlayercubeHolder PCH;
     public cubeInsantiater CI;
+   
     
    
     public void Awake()
@@ -37,7 +38,7 @@ public class GameData : MonoBehaviour
         CI = FindObjectOfType<cubeInsantiater>();
 
         Load();
-       
+      
         
     }
     private void Start()
@@ -46,7 +47,7 @@ public class GameData : MonoBehaviour
         Notify();
     }
    
-    void Save()
+  void Save()
     {
         string dataPath =  Application.persistentDataPath;
         var serializer = new XmlSerializer(typeof(SaveFile));
@@ -55,7 +56,7 @@ public class GameData : MonoBehaviour
         stream.Close();
        
     }
-    void Load()
+   public void Load()
     {
         string dataPath = Application.persistentDataPath;
         if(System.IO.File.Exists(dataPath + "/" + "naya" + ".save"))
@@ -68,11 +69,13 @@ public class GameData : MonoBehaviour
         }
         
     }
-    public bool CheckFile(bool exist)
+   
+    public bool CheckFile()
     {
+        bool exist = false;
         if (System.IO.File.Exists(Application.persistentDataPath + "/" + "naya" + ".save"))
         {
-            exist = true;
+            exist= true;
         }
         else
         {
@@ -90,34 +93,45 @@ public class GameData : MonoBehaviour
        }
         
     }
-    void SavingData()
+  
+  public  void SavingData()
     {
 
         PCH = FindObjectOfType<PlayercubeHolder>();
+        if (PCH == null)
+            return;
         CI = FindObjectOfType<cubeInsantiater>();
         currentSave.score = CI.score;
-        currentSave.continuee = GameManager.singleton.continuegarni;
+       
+        currentSave.LocalHighestCube = GameManager.singleton.LocalBestCube;
+        currentSave.HighestCube = GameManager.singleton.BestCube;
         if(PCH.transform.childCount > 0)
         {
-            currentSave.PlayerCube.value = PCH.playerCube.GetComponent<cube>().value;
+            currentSave.PlayerCube.value = PCH._playerCube.Value;
            
         }
-        else
-        {
-            int[] num = new int[] { 2, 4, 8, 16, 32, 64 };
-            currentSave.PlayerCube.value = num[UnityEngine.Random.Range(0, num.Length)];
-            
-        }
+        int index = 0;
         if (CI.transform.childCount > 0)
         {
             currentSave.savecube.Clear();
-            for(int i = 0; i < CI.transform.childCount; i++)
+          
+            for (int i = 0; i < CI.transform.childCount; i++)
             {
+                if (CI.transform.GetChild(i).transform.position.z < -1.0f)
+                {
+                    
+                    
+
+                    continue;
+                }
                 currentSave.savecube.Add(new SaveCube());
-                currentSave.savecube[i].value = CI.transform.GetChild(i).GetComponent<cube>().value;
-                currentSave.savecube[i].Pos = CI.transform.GetChild(i).transform.position;
-                currentSave.savecube[i].Rot = CI.transform.GetChild(i).transform.eulerAngles;
+              
+                currentSave.savecube[index].value = CI.transform.GetChild(i).GetComponent<Cube>().Value;
+                currentSave.savecube[index].Pos = CI.transform.GetChild(i).transform.position;
+                currentSave.savecube[index].Rot = CI.transform.GetChild(i).transform.eulerAngles;
+                index++;
             }
+            
         }
        else{
             currentSave.savecube.Clear();
@@ -232,9 +246,11 @@ iOSNotificationCenter.ScheduleNotification(notification);
         public List<SaveCube> savecube;
    
         public SaveCube PlayerCube;
-        public bool continuee;
+       
         public int score,bgvalue;
-    
-         
-    }
+    public int HighestCube;
+    public int LocalHighestCube;
+
+
+}
 

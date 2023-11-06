@@ -2,25 +2,29 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!21 &2100000
 Material:
-  serializedVersion: 6
+  serializedVersion: 8
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: spheretocube
-  m_Shader: {fileID: -6465566751694194690, guid: 4aac405b886f86a44822b57db3ce06c1, type: 3}
-  m_ShaderKeywords: 
+  m_Shader: {fileID: -6465566751694194690, guid: c1dd34d98dd7d3f4594fa8917704f50c, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
     - Texture2D_6c90eb4c8720427f8df6b1cc480448f3:
-        m_Texture: {fileID: 2800000, guid: b84d5697ead9e18488a092ea65812978, type: 3}
+        m_Texture: {fileID: 2800000, guid: 301cb74d56887fd4abc3250165c0f8e9, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_8e15933d0c3e424c81dca491f1956bd1:
@@ -83,10 +87,11 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    m_Ints: []
     m_Floats:
-    - Vector1_09a0ca33d2ec406789b2a5ec7880731e: 0.5
+    - Vector1_09a0ca33d2ec406789b2a5ec7880731e: -0.02
     - Vector1_8cbdf51fd3314692b9b04ca6ebfe6f1c: 1
-    - Vector1_ae55dcaa806843638614b6a0428b1288: 0.9
+    - Vector1_ae55dcaa806843638614b6a0428b1288: 0.919
     - _AlphaClip: 0
     - _Blend: 0
     - _BumpScale: 1
@@ -104,6 +109,7 @@ Material:
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
+    - _QueueControl: 0
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _Smoothness: 0.5
@@ -114,15 +120,16 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - Color_2: {r: 1, g: 0, b: 0, a: 0}
-    - Color_22e4d72bd1be4dc8871c13850a37e853: {r: 1, g: 0, b: 0, a: 0}
+    - Color_2: {r: 1, g: 1, b: 1, a: 0}
+    - Color_22e4d72bd1be4dc8871c13850a37e853: {r: 0.3416214, g: 1, b: 0, a: 1}
     - Vector2_8ffece6b92694efda31d652f687d74f9: {r: 0.2, g: 0.2, b: 0, a: 0}
     - Vector2_b54ef35bbf3249bc82bea43faf1d26ad: {r: 0.8, g: 0.8, b: 0, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _Edge: {r: 1, g: 0, b: 0, a: 0}
+    - _Edge: {r: 1, g: 1, b: 1, a: 1}
+    - _Edge_1: {r: 0, g: 1, b: 0.87420845, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _Middle: {r: 1, g: 0, b: 0, a: 0}
+    - _Middle: {r: 0, g: 0.18888474, b: 1, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _offset: {r: 0, g: 0.8, b: 0, a: 0}
     - jsjaaka: {r: 0, g: 0, b: 0, a: 0}
@@ -139,4 +146,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 4
+  version: 7

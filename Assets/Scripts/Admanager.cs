@@ -1,19 +1,14 @@
-﻿/*using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
-using GoogleMobileAds.Api;
-using System;
 
 public class Admanager : MonoBehaviour
 {
 
     public static Admanager Instance;
+    public string YOUR_APP_KEY;
 
-    private BannerView bannerView;
-    private InterstitialAd interstitial;
-    public RewardedAd rewardedAd;
-    public string kwala;
-
+   private IRewardable _rewardable;
+   
    void Awake(){
 
         DontDestroyOnLoad(gameObject);
@@ -24,159 +19,114 @@ public class Admanager : MonoBehaviour
         else if (Instance != this)
             Destroy(gameObject);
        }
-    public void Start()
+    private void OnEnable()
     {
-        
-
-   //   MobileAds.Initialize(initStatus => { });
-
-
-        this.RequestBanner();
-        this.RequestInterstitial();
-        this.CreateAndLoadRewardedAd();
-
+        IronSourceEvents.onSdkInitializationCompletedEvent += SdkInitializationCompletedEvent;
+     
        
-        
+        IronSourceInterstitialEvents.onAdClosedEvent += InterstitialOnAdClosedEvent;
+
+        IronSourceRewardedVideoEvents.onAdRewardedEvent += RewardedVideoOnAdRewardedEvent;
+
+        IronSourceBannerEvents.onAdLoadedEvent += BannerOnAdLoadedEvent;
+    }
+    private void Start()
+    {
+
+        IronSource.Agent.init(YOUR_APP_KEY, IronSourceAdUnits.REWARDED_VIDEO, IronSourceAdUnits.INTERSTITIAL, IronSourceAdUnits.OFFERWALL, IronSourceAdUnits.BANNER);
 
     }
-
-
-
-
-    private void RequestBanner()
+    private void SdkInitializationCompletedEvent()
     {
-#if UNITY_ANDROID
-        string adUnitId = "ca-app-pub-3940256099942544/6300978111";
-#elif UNITY_IPHONE
-            string adUnitId = "ca-app-pub-3940256099942544/2934735716";
-#else
-            string adUnitId = "unexpected_platform";
-#endif
+        IronSource.Agent.validateIntegration();
 
-        // Create a 320x50 banner at the top of the screen.
-        bannerView = new BannerView(adUnitId, AdSize.Banner, AdPosition.Bottom);
+        IronSource.Agent.loadBanner(IronSourceBannerSize.BANNER, IronSourceBannerPosition.BOTTOM);
 
-        // Create an empty ad request.
-        AdRequest request = new AdRequest.Builder().Build();
-
-        // Load the banner with the request.
-        bannerView.LoadAd(request);
-    }
-
-    private void RequestInterstitial()
-    {
-#if UNITY_ANDROID
-        string adUnitId = "ca-app-pub-3940256099942544/1033173712";
-
-#elif UNITY_IPHONE
-        string adUnitId = "ca-app-pub-3940256099942544/4411468910";
-#else
-        string adUnitId = "unexpected_platform";
-#endif
-
-        // Initialize an InterstitialAd.
-        this.interstitial = new InterstitialAd(adUnitId);
-
-        // Create an empty ad request.
-        AdRequest request = new AdRequest.Builder().Build();
-        // Load the interstitial with the request.
-        this.interstitial.LoadAd(request);
+        IronSource.Agent.loadInterstitial();
+        IronSource.Agent.loadRewardedVideo();
 
     }
-
-    public void ShowFullScreenAds()
+    private void BannerOnAdLoadedEvent(IronSourceAdInfo info)
     {
-        if (this.interstitial.IsLoaded())
+        IronSource.Agent.displayBanner();
+    }
+
+    private void InterstitialOnAdClosedEvent(IronSourceAdInfo info)
+    {
+        IronSource.Agent.loadInterstitial();
+    }
+
+    
+
+    void OnApplicationPause(bool isPaused)
+    {
+        IronSource.Agent.onApplicationPause(isPaused);
+    }
+   
+
+    public void ShowFullScreenAd()
+    {
+        if (IronSource.Agent.isInterstitialReady())
         {
-            this.interstitial.Show();
-
-
+            IronSource.Agent.showInterstitial();
         }
-        this.RequestInterstitial();
-
-    }
-    public void CreateAndLoadRewardedAd()
-    {
-#if UNITY_ANDROID
-        string adUnitId = "ca-app-pub-3940256099942544/5224354917";
-#elif UNITY_IPHONE
-            string adUnitId = "ca-app-pub-3940256099942544/1712485313";
-#else
-            string adUnitId = "unexpected_platform";
-#endif
-
-        this.rewardedAd = new RewardedAd(adUnitId);
-
-        this.rewardedAd.OnAdLoaded += HandleRewardedAdLoaded;
-        this.rewardedAd.OnUserEarnedReward += HandleUserEarnedReward;
-        this.rewardedAd.OnAdClosed += HandleRewardedAdClosed;
-
-        // Create an empty ad request.
-        AdRequest request = new AdRequest.Builder().Build();
-        // Load the rewarded ad with the request.
-        this.rewardedAd.LoadAd(request);
-    }
-
-    public void UserChoseToWatchAd()
-    {
-        if (this.rewardedAd.IsLoaded())
+        else
         {
-            this.rewardedAd.Show();
+            IronSource.Agent.loadInterstitial();
         }
-       CreateAndLoadRewardedAd();
-    }
-
-    public void HandleRewardedAdLoaded(object sender, EventArgs args)
-    {
-        MonoBehaviour.print("HandleRewardedAdLoaded event received");
-    }
-
-    public void HandleRewardedAdFailedToLoad(object sender, AdErrorEventArgs args)
-    {
-        MonoBehaviour.print(
-            "HandleRewardedAdFailedToLoad event received with message: "
-                             + args.Message);
-    }
-
-    public void HandleRewardedAdOpening(object sender, EventArgs args)
-    {
-        MonoBehaviour.print("HandleRewardedAdOpening event received");
-    }
-
-    public void HandleRewardedAdFailedToShow(object sender, AdErrorEventArgs args)
-    {
-        MonoBehaviour.print(
-            "HandleRewardedAdFailedToShow event received with message: "
-                             + args.Message);
-    }
-
-    public void HandleRewardedAdClosed(object sender, EventArgs args)
-    {
-        MonoBehaviour.print("HandleRewardedAdClosed event received");
-    }
-
-    public void HandleUserEarnedReward(object sender, Reward args)
-    {
-        string type = args.Type;
-        double amount = args.Amount;
-        MonoBehaviour.print(
-            "HandleRewardedAdRewarded event received for "
-                        + amount.ToString() + " " + type);
-
-        switch (kwala)
-        {
-            case "CONTINUE":
-                GameManager.singleton.Continue();
-                break;
-            case "2BOMB":
-                GameManager.singleton.AddBomb();
-                break;
-            case  "2XBOMB":
-                GameManager.singleton.DoubleBomb();
-                break;
-        }
-
        
+    }
+    public void ShowRewardedAd(IRewardable rewardable)
+    {
+
+        _rewardable = rewardable;
+        if (IronSource.Agent.isRewardedVideoAvailable())
+        {
+            IronSource.Agent.showRewardedVideo();
+
+        }
+        else
+        {
+            IronSource.Agent.loadRewardedVideo();
+        }
+    }
+    void RewardedVideoOnAdRewardedEvent(IronSourcePlacement placement, IronSourceAdInfo adInfo)
+    {
+        //TODO - here you can reward the user according to the reward name and amount
+        IronSource.Agent.loadRewardedVideo();
+        _rewardable.GetReward();
+       
+    }
+    /*   public void HandleUserEarnedReward(object sender, Reward args)
+       {
+           string type = args.Type;
+           double amount = args.Amount;
+           MonoBehaviour.print(
+               "HandleRewardedAdRewarded event received for "
+                           + amount.ToString() + " " + type);
+
+           switch (kwala)
+           {
+               case "CONTINUE":
+                   GameManager.singleton.Continue();
+                   break;
+               case "2BOMB":
+                   GameManager.singleton.AddBomb();
+                   break;
+               case  "2XBOMB":
+                   GameManager.singleton.DoubleBomb();
+                   break;
+           }
+
+
+       }*/
+
+    private void OnDisable()
+    {
+        IronSourceEvents.onSdkInitializationCompletedEvent -= SdkInitializationCompletedEvent;
+        IronSourceInterstitialEvents.onAdClosedEvent -= InterstitialOnAdClosedEvent;
+        IronSourceRewardedVideoEvents.onAdRewardedEvent -= RewardedVideoOnAdRewardedEvent;
+
+        IronSourceBannerEvents.onAdLoadedEvent -= BannerOnAdLoadedEvent;
     }
 }
-*/

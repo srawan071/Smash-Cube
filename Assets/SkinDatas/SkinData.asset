@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ef6a54893681b04ca4c2f5950e10f2e, type: 3}
+  m_Name: SkinData
+  m_EditorClassIdentifier: 
+  NormalSkin:
+  - {fileID: 2800000, guid: c64ef14b6d002d74c967f641f4ba9c1e, type: 3}
+  - {fileID: 2800000, guid: 1a970982b26c48b4a96878c7b47978af, type: 3}
+  - {fileID: 2800000, guid: fb3eea3e18dc9ea46ad6236b3e418e58, type: 3}
+  - {fileID: 2800000, guid: c7fb254111f3d0d48ad6280d3d35fb92, type: 3}
+  - {fileID: 2800000, guid: 6621a2c2cd7fa4244a21161563946468, type: 3}
+  - {fileID: 2800000, guid: 340fa5ad75d172647b914b2594b65a6e, type: 3}
+  - {fileID: 2800000, guid: 375123b62eaa1d643890e471f95f22e4, type: 3}
+  - {fileID: 2800000, guid: 65372125cfade6c48bbfdbac2bf839e8, type: 3}
+  - {fileID: 2800000, guid: d7f4e19d920197e40985bd79998ba687, type: 3}
+  EpicSkin:
+  - {fileID: 2800000, guid: c64ef14b6d002d74c967f641f4ba9c1e, type: 3}
+  - {fileID: 2800000, guid: 1ae25572edf394f428faee5b9421a86e, type: 3}
+  - {fileID: 2800000, guid: 1a970982b26c48b4a96878c7b47978af, type: 3}
+  - {fileID: 2800000, guid: fb3eea3e18dc9ea46ad6236b3e418e58, type: 3}
+  - {fileID: 2800000, guid: c7fb254111f3d0d48ad6280d3d35fb92, type: 3}
+  - {fileID: 2800000, guid: 6621a2c2cd7fa4244a21161563946468, type: 3}
+  - {fileID: 2800000, guid: 34e3a93324e41a949a363d00239213ca, type: 3}
+  - {fileID: 2800000, guid: b6aa297b7977f934493add5b1170df22, type: 3}
+  - {fileID: 2800000, guid: 98490e66b44568a4bbcb5eb5df5d5ad5, type: 3}
+  ShopNormalSkin:
+  - {fileID: 21300000, guid: a21928fa4a698704cbc7d21787c460a5, type: 3}
+  - {fileID: 21300000, guid: e29583dfb426c264c80029091641fd50, type: 3}
+  - {fileID: 21300000, guid: 73bfd9a2a41320f46992287c8c06b0ea, type: 3}
+  - {fileID: 21300000, guid: 2e73fd104600f4d40b51b889a958339f, type: 3}
+  - {fileID: 21300000, guid: f452622ef0b889b49b3c707d32ab2806, type: 3}
+  - {fileID: 21300000, guid: 15a668dac941a9a41abda0ad892b7f74, type: 3}
+  - {fileID: 21300000, guid: b6c354be05dddc042b683be354acbe55, type: 3}
+  - {fileID: 21300000, guid: 79a510605a6ec934b97a6ca895bf7205, type: 3}
+  - {fileID: 21300000, guid: eb811d70096dde8468e883e255ccd91c, type: 3}
+  ShopEpicSkin:
+  - {fileID: 21300000, guid: c05d80b2610d40d4f958e487867b0a89, type: 3}
+  - {fileID: 21300000, guid: a7fdf847bef9dae45b0bbdbf9b160c80, type: 3}
+  - {fileID: 21300000, guid: a772ccc1dd6b22e4ab5c6419095fc00e, type: 3}
+  - {fileID: 21300000, guid: 97b87744a95d87640a0267709e7e8658, type: 3}
+  - {fileID: 21300000, guid: d8ec4a463e96fef4bba60aa3234580b2, type: 3}
+  - {fileID: 21300000, guid: 30687685cd3b64645a723b5606fc7060, type: 3}
+  - {fileID: 21300000, guid: 2435429eddecc3047a951b52e40052ec, type: 3}
+  - {fileID: 21300000, guid: a8a5e41f045c6c24eb0aa9bf8a2b1866, type: 3}
+  - {fileID: 21300000, guid: 0355c1f8cc8fbaa45867974b90f9ea99, type: 3}

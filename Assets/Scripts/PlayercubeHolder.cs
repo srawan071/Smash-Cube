@@ -1,139 +1,132 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
+using TMPro;
 
 public class PlayercubeHolder : MonoBehaviour
 {
     public GameObject playerCube;
-    public bool moveonX, checkOnce;
-   public  Vector2 lastTapPos;
-    public float speed;
+    public Cube _playerCube;
     public GameObject Target;
-    private Ray ray;
+
+   
+    private float _tempPos;
+    private bool _shoot;
     [SerializeField]
-  RaycastHit[] hit;
-  public  LayerMask layer;
-    float tempPos;
-    bool shoot;
-    cubeInsantiater cubeInstantiater;
-    public GameObject TexasHoldim;
-    void Start()
+   private cubeInsantiater cubeInstantiater;
+
+    private PlayerControls _playerControls;
+    private RigidbodyInterpolation _rigidIntrapolation;
+   
+    [SerializeField]
+    private float _dragSpeed;
+
+
+    private void Awake()
     {
-        cubeInstantiater = FindObjectOfType<cubeInsantiater>();
-        hit = new RaycastHit[1];
-        GetChild();
-
-        checkOnce = true;
-        moveonX = true;
-
+        _playerControls = new PlayerControls();
     }
 
-
-    public void GetChild()
+    private void OnEnable()
     {
-        if (transform.childCount > 0)
-        {
+        _playerControls.Player.Enable();
+        _playerControls.Player.Press.performed += OnPressed;
+        _playerControls.Player.Press.canceled += OnReleased;
+        _playerControls.Player.Delta.performed += OnDrag;
+      
+    }
 
-            playerCube = transform.GetChild(0).gameObject;
+    private IEnumerator Start()
+    {
+        yield return null;
+       _dragSpeed = 270/(float)Screen.width;
+        
+    }
+    private void OnPressed(InputAction.CallbackContext context)
+    {
+        StartCoroutine(UICheck());
+
+       
+    }
+
+    private void OnDrag(InputAction.CallbackContext context)
+    {
+        if (_shoot&& _playerCube != null)
+        {
+            _tempPos += _playerControls.Player.Delta.ReadValue<Vector2>().x * Time.fixedDeltaTime * _dragSpeed;
+            _tempPos = Mathf.Clamp(_tempPos, -1.75f, 1.75f);
+
+
+            _playerCube.rb.position = new Vector3(_tempPos, _playerCube.transform.position.y, _playerCube.transform.position.z);
            
-
-
+            Target.transform.position = new Vector3(_playerCube.transform.position.x, 1, 1);
         }
+
+       
     }
 
-    void Update()
+    private void OnReleased(InputAction.CallbackContext context)
     {
-        if (!GameManager.singleton.isPaused)
+       
+        if (_shoot && _playerCube != null)
         {
-            if (transform.childCount > 0)
-            {
-                if (playerCube == null)
-                {
+           
+            _playerCube.rb.isKinematic = false;
+            _playerCube.rb.interpolation = RigidbodyInterpolation.None;
 
-                    playerCube = transform.GetChild(0).gameObject;
-                    Target.transform.position = playerCube.transform.position;
-                 
-
-                }
-                /*
-                if (Input.GetMouseButton(0))
-                {
-                    Vector2 curTapPos = Input.mousePosition;
-
-                    if (lastTapPos == Vector2.zero)
-                    {
-                        lastTapPos = curTapPos;
-                        Target.SetActive(true);
-                    }
-                    float alpha = lastTapPos.y - curTapPos.y;
-                    float delta = lastTapPos.x - curTapPos.x;
-                    lastTapPos = curTapPos;
+            _playerCube.outcheck();
+          
+            _playerCube.rb.velocity = Vector3.forward * 18;
+            cubeInstantiater.InstantiateSwipeCube(_tempPos);
+            if(!_playerCube.bomb)
+            cubeInstantiater.GroundCubes.Add(_playerCube);
+            _playerCube.transform.SetParent(cubeInstantiater.transform);
 
 
-                        playerCube.transform.position += (Vector3.right * -delta * Time.deltaTime * .35f);
-                  
+            _playerCube.trail.EnableTrail();
 
-                }
-                if (Input.GetMouseButtonUp(0))
-                {
-                   
-                            FindObjectOfType<MusicVibrate>().swoosh.Play();
-                            StartCoroutine(playerCube.GetComponent<cube>().outcheck());
-                            playerCube.GetComponent<cube>().rb.velocity = Vector3.forward * 18;
-                    FindObjectOfType<cubeInsantiater>().InstantiateSwipeCube();
-                            playerCube.transform.SetParent(GameObject.Find("/CubeInsantiater/").transform);
-                          
-                            playerCube.GetComponent<TrailRenderer>().enabled = true;
-                    Target.SetActive(false);
-
-                      
-                    
-                   
-
-                    lastTapPos = Vector2.zero;
-                }
-                */
-              
-                if (Input.GetMouseButton(0))
-                {
-                    ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                    if (Physics.RaycastNonAlloc(ray,hit,100,layer)>0)
-                    {
-                        if (!shoot)
-                        {
-                            shoot = true;
-                            Target.SetActive(true);
-                        }
-                        tempPos = Mathf.Clamp(hit[0].point.x, -1.8f, 1.8f);
-                        playerCube.transform.position = new Vector3(tempPos, playerCube.transform.position.y,playerCube.transform.position.z);
-                        Target.transform.position = new Vector3(playerCube.transform.position.x, 1, 1);
-                    }
-                }
-                if (Input.GetMouseButtonUp(0))
-                {
-                    if (shoot)
-                    {
-                        TexasHoldim.SetActive(false);
-                        shoot = false;
-                        FindObjectOfType<MusicVibrate>().swoosh.Play();
-                        StartCoroutine(playerCube.GetComponent<cube>().outcheck());
-                        playerCube.GetComponent<cube>().rb.velocity = Vector3.forward * 18;
-                        cubeInstantiater.InstantiateSwipeCube(tempPos);
-                        playerCube.transform.SetParent(cubeInstantiater.transform);
-
-                        playerCube.GetComponent<TrailRenderer>().enabled = true;
-                        Target.SetActive(false);
-                    }
-
-                }
-
-                //   playerCube.transform.position = new Vector3(Mathf.Clamp(playerCube.transform.position.x, -1.8f, 1.8f), playerCube.transform.position.y, Mathf.Clamp(playerCube.transform.position.z, -4.25f, -3));
-                // Target.transform.position = new Vector3(playerCube.transform.position.x, 1, 1);
-            }
-
+            Target.SetActive(false);
+            _playerCube = null;
+            _shoot = false;
+            Sounds.PlaySoundSource(5);
         }
+      
 
     }
-    
+
+  
+    private void OnDisable()
+    {
+
+        _playerControls.Player.Press.performed -= OnPressed;
+        _playerControls.Player.Press.canceled -= OnReleased;
+        _playerControls.Player.Delta.performed -= OnDrag;
+        _playerControls.Player.Disable();
+    }
+
+    private IEnumerator UICheck()
+    {
+        yield return new WaitForEndOfFrame();
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            GameManager.singleton.isPaused = true;
+        }
+        else
+            GameManager.singleton.isPaused = false;
+        if (!_shoot && !GameManager.singleton.isPaused && _playerCube != null)
+        {
+           // _playerCube.rb.position = new Vector3(_tempPos, _playerCube.transform.position.y, _playerCube.transform.position.z);
+            _shoot = true;
+            Target.SetActive(true);
+            Target.transform.position = new Vector3(_playerCube.transform.position.x, 1, 1);
+
+           
+        }
+    }
 }
+    
+
 

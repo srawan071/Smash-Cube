@@ -6,6 +6,7 @@ public class SafeAreaPanel : MonoBehaviour
 {
 
     private RectTransform _rectTransform;
+   
 
     private void Awake()
     {
@@ -32,6 +33,8 @@ public class SafeAreaPanel : MonoBehaviour
         anchorMin.y /= Screen.height;
         anchorMax.x /= Screen.width;
         anchorMax.y /= Screen.height;
+       
+       
         _rectTransform.anchorMin = anchorMin;
         _rectTransform.anchorMax = anchorMax;
     }

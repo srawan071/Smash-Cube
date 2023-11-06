@@ -27,7 +27,7 @@ public class Share : MonoBehaviour
     
     public void OnAndroidTextSharingClick()
     {
-        MusicVibrate.Instance.tap.Play();
+       // MusicVibrate.Instance.tap.Play();
 
         StartCoroutine(ShareAndroidText());
 
@@ -71,7 +71,7 @@ public class Share : MonoBehaviour
 
     public void RateUs()
     {
-        MusicVibrate.Instance.tap.Play();
+       // MusicVibrate.Instance.tap.Play();
 #if UNITY_ANDROID
         Application.OpenURL("market://details?id=com.srawan.smashcube");
 #elif UNITY_IPHONE
@@ -81,12 +81,12 @@ public class Share : MonoBehaviour
 
     public void PrivacyPolicy()
     {
-        MusicVibrate.Instance.tap.Play();
+      //  MusicVibrate.Instance.tap.Play();
         Application.OpenURL("https://sites.google.com/view/privacypolicy-smashcube");
     }
     public void VsitUs()
     {
-        MusicVibrate.Instance.tap.Play();
+       // MusicVibrate.Instance.tap.Play();
         Application.OpenURL("https://play.google.com/store/apps/developer?id=Srawan");
     }
 

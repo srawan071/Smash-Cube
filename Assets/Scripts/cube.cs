@@ -2,260 +2,416 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.Pool;
+using ProMaxUtils;
 
-public class cube : MonoBehaviour
+public class Cube : MonoBehaviour
 {
-    public TMP_Text[] text;
-    public int value;
-    public bool sound, swipe,bomb,notjelly;
-    public Vector3 midpos;
-    public Rigidbody rb;
+
+    public int Value;
+    public bool bomb;
     public bool check;
-    public GameObject Bombpart,StrikePart;
-    public GameObject CoinPart, DollarPart;
+
+    public Rigidbody rb;
+    [SerializeField]
+    private int _colValue;
+    private cubeInsantiater _cubeInstantiater;
+    private int _id;
+    private int _basemap;
+   public Material _material;
+    private Vector3 midpos;
+    [SerializeField]
+    private Collider _colider;
+    [SerializeField]
+    private MeshRenderer _meshRenderer;
+    [SerializeField]
+    private AnimationCurve _curveSwipe,_curveShoot;
+    [SerializeField]
+    private bool _col;
+    private ObjectPool<Cube> _cubePool;
+    private ObjectPool<Cube> _bombPool;
+    private bool CollideOnce;
+    private ParticlePool _particlePool;
+    private CameraController _cameraController;
+    private ParticlesEffects _particles;
+    public Trail trail;
+    private int blinkValue;
+    private Cube _anotherCube;
+    private const string box = "box";
+    // public Coroutine OutCheck;
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody>();
+       // Camera.main.gameObject.SetActive(false);
+        _id = GetInstanceID();
 
+        _cubeInstantiater = FindObjectOfType<cubeInsantiater>();
+        _cameraController = FindObjectOfType<CameraController>();
+        _particlePool = FindObjectOfType<ParticlePool>();
+
+        _material = _meshRenderer.material;
+
+        _basemap = Shader.PropertyToID("_BaseMap");
+        blinkValue = Shader.PropertyToID("_lerp");
+
+
+        _col = true;
+       
+      
     }
 
-    void Start()
+    //1stTime
+    public IEnumerator SetCubeRelease()
     {
-        sound = true;
-        if(!bomb&& !notjelly)
-        StartCoroutine(jellycube());
-        for (int i = 0; i < text.Length; i++)
-        {
-            if (value == 0)
-            {
-                text[i].fontSize = 0;
-            }
-            else if (value == 1)
-            {
-                text[i].fontSize = 0;
-            }
-            else if (value < 100)
-            {
-                text[i].fontSize = 10;
-            }
-            else if(value<1000)
-            {
-
-                text[i].fontSize = 8;
-            }
-            else
-            {
-
-                text[i].fontSize = 7;
-            }
-            if (value < 10000)
-            {
-                text[i].text = "" + value;
-            }
-            else
-            {
-                text[i].text = "" + value/1000+"k";
-            }
-        }
-
-        if (swipe)
-        {
-          
-        }
-        else
-        {
-            shoot();
-            check = true;
-        }
-
-        GetComponent<TrailRenderer>().enabled = false;
+        _colider.enabled = false;
+        yield return null;
+        _colider.enabled = true;
+        _cubePool.Release(this);
     }
+    public IEnumerator SetBombRelease()
+    {
+        _colider.enabled = false;
+        yield return null;
+        _colider.enabled = true;
+        _bombPool.Release(this);
+
+    }
+
+    public void SetCubePool(ObjectPool<Cube> pool)
+    {
+        _cubePool = pool;
+    }
+    public void SetBombPool(ObjectPool<Cube> pool)
+    {
+
+        _bombPool = pool;
+
+    }
+    public void InitializeShootCube(int value, Vector2 offset)
+    {
+       // rb.isKinematic = false;
+       // rb.interpolation = RigidbodyInterpolation.None;
+        offset += Vector2.one * 0.003f;
+        _colValue = 1;
+        CollideOnce = false;
+        
+        Value = value;
+        _material.SetTextureOffset(_basemap, offset);
+        _material.SetFloat(blinkValue, 0);
+        gameObject.SetActive(true);
+        StartCoroutine(JellyCube(1.25f,_curveShoot));
+        StartCoroutine(EnableCheck());
+       
+        shoot();
+
+
+    }
+    public void InitializeSwipeCube(int value, Vector2 offset, Trail Traill)
+    {
+       
+        offset += Vector2.one * 0.003f;
+        trail = Traill;
+        //trail.transform.SetParent(transform);
+     //   trail.Initialized(transform.position);
+        _colValue = 1;
+        CollideOnce = true;
+        
+        Value = value;
+        _material.SetTextureOffset(_basemap, offset);
+        _material.SetFloat(blinkValue, 0);
+         rb.isKinematic = true;
+         rb.interpolation = RigidbodyInterpolation.Interpolate;
+       
+        gameObject.SetActive(true);
+
+
+
+        StartCoroutine(JellyCube(1.75f,_curveSwipe));
+        if(_cubeInstantiater._shopData.SkinSide==1)
+            rb.angularDrag = 10; 
+    }
+    public void InitializeFirstCubes(int value, Vector2 offset)
+    {
+
+        offset += Vector2.one * 0.003f;
+        _colValue = 1;
+        CollideOnce = true;
+       
+        Value = value;
+        check = true;
+        _material.SetTextureOffset(_basemap, offset);
+        _material.SetFloat(blinkValue, 0);
+        rb.velocity = Vector3.zero;
+      
+
+        gameObject.SetActive(true);
+    }
+    public void InitializeBomb(Trail Traill)
+    {
+
+        trail = Traill;
+      //  trail.transform.SetParent(transform);
+      
+        _colValue = 1;
+        CollideOnce = false;
+      
+        Value = -1;
+      
+        bomb = true;
+        gameObject.SetActive(true);
+        rb.isKinematic = true;
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
+
+
+
+    }
+ 
 
     private void Update()
     {
+       
         if (check)
         {
-            if (transform.position.z < -1.35f)
+            if (transform.position.z < -1.2f)
             {
                 check = false;
+
                 GameManager.singleton.GameOver();
+               
                 
+
             }
         }
-        if (transform.position.z < -.75f&& rb.velocity.z<0)
+        if (transform.position.z < -.75f && rb.velocity.z < 0)
         {
-            rb.velocity = new Vector3(0,0,0);
+            rb.velocity = new Vector3(0, 0, 1);
         }
     }
 
-    public IEnumerator outcheck()
+    public void outcheck()
     {
+        CollideOnce = false;
+        if(this.isActiveAndEnabled)
+        StartCoroutine(EnableCheck());
+    }
+    IEnumerator EnableCheck()
+    {
+
         yield return new WaitForSeconds(1f);
         check = true;
     }
-    IEnumerator jellycube()
+
+    IEnumerator JellyCube(float speed,AnimationCurve _curve)
     {
-        Vector3 temp = transform.localScale = new Vector3(0, 0, 0);
-
-        int x = 0;
-        while (x < 3)
+        transform.localScale = new Vector3(0, 0, 0);
+       
+        float t = 0;
+       
+        while (t < 1)
         {
-            switch (x)
-            {
-                case 0:
-                    if (GameManager.singleton.Mode == 0)
-                    {
+            t = Mathf.MoveTowards(t, 1, Time.deltaTime *speed);
 
-                        for (int i = 0; i < 5; i++)
-                        {
-                            temp.x += 0.154f;
-                            temp.y += 0.154f;
-                            temp.z += 0.154f;
-                            transform.localScale = temp;
-                            yield return new WaitForSeconds(0.0000000000000001f);
-
-
-
-                        }
-                    }
-                    else
-                    {
-
-                        for (int i = 0; i < 5; i++)
-                        {
-                            temp.x += 0.11f;
-                            temp.y += 0.11f;
-                            temp.z += 0.11f;
-                            transform.localScale = temp;
-                            yield return new WaitForSeconds(0.0000000000000001f);
-
-                        }
-                    }
-
-                    break;
-                case 1:
-                    for (int i = 0; i < 3; i++)
-                    {
-
-                        temp.x -= 0.05f;
-                        temp.y -= 0.05f;
-                        temp.z -= 0.05f;
-                        transform.localScale = temp;
-                        yield return new WaitForSeconds(0.000000000000000000001f);
-
-                    }
-                    break;
-                case 2:
-                    for (int i = 0; i <3 ; i++)
-                    {
-
-                        temp.x += 0.0333f;
-                        temp.y += 0.0333f;
-                        temp.z += 0.0333f;
-                        transform.localScale = temp;
-                        yield return new WaitForSeconds(0.000000000000000000001f);
-
-                    }
-                    break;
-
-            }
-            x++;
-
+            transform.localScale = Vector3.LerpUnclamped(Vector3.zero, Vector3.one, _curve.Evaluate(t));
+          
+            yield return null;
         }
-        if (GameManager.singleton.Mode == 0)
-            transform.localScale = new Vector3(.7f, .7f, .7f);
-        else
-        {
-            transform.localScale = new Vector3(.5f, .5f, .5f);
-            if (swipe)
-            {
-               
-            }
-        }
+        transform.localScale = Vector3.one;
+      
     }
 
-    void shoot()
+
+    
+
+    private void shoot()
     {
-        GameObject target = GameObject.Find("/CubeInsantiater/" + value);
+        Transform target = this.transform;
 
-        if (target == null)
+        for(int i=0; i < _cubeInstantiater.GroundCubes.Count;i++)
         {
-            target = this.gameObject;
-           
-           
+            if (_cubeInstantiater.GroundCubes[i].Value == Value)
+            {
+                target = _cubeInstantiater.GroundCubes[i].transform;
+              
+                break;
+            }
         }
+      
 
-        Vector3 angle = target.transform.position - transform.position;
-        if(angle.x==0&& angle.z == 0)
+        Vector3 angle = target.position - transform.position;
+        if (angle.x == 0 && angle.z == 0)
         {
             angle.x = Random.Range(-2f, 2f);
             angle.z = Random.Range(2f, 4f);
         }
-        rb.velocity = new Vector3(angle.x / 2,7 , angle.z / 2);
-        transform.SetParent(GameObject.Find("/CubeInsantiater").transform);
+        
+        rb.velocity = Random.value>.1f? new Vector3(angle.x / 2, 7, angle.z / 2): new Vector3(angle.x / 2, Random.Range(8, 15), angle.z / 2);
+        if(_cubeInstantiater._shopData.SkinSide==0)
+        rb.angularVelocity = new Vector3(2, 0, 3);
+        else
+        {
+            rb.angularDrag = 0;
+            rb.angularVelocity = new Vector3(3, 0, 4);
+            StartCoroutine(ApplyAngularDrag());
+          
+        }
+
+        transform.SetParent(_cubeInstantiater.transform);
+        _cubeInstantiater.GroundCubes.Add(this);
+       
+    }
+    private IEnumerator ApplyAngularDrag()
+    {
+        float t = 0;
+        while (t < 1)
+        {
+            t += Time.deltaTime*.01f;
+            rb.angularDrag += t * 10;
+            yield return null;
+        }
+        rb.angularDrag = 10;
+    }
+    private IEnumerator Blink()
+    {
+      
+        float t = 0;
+        int repeat=2;
+        float speed = 10f;
+        while (t<repeat)
+        {
+            t = Mathf.MoveTowards(t, repeat, Time.unscaledDeltaTime * speed);
+            _material.SetFloat(blinkValue, (((Mathf.Sin((t - .5f) * 3) + 1) * .5f)));
+         
+
+            yield return null;
+        }
+      
+        _material.SetFloat(blinkValue, 0);
+    }
+  
+    private void EnableCollision()
+    {
+        _col = true;
     }
 
-    
+   
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.name == "" + value)
+       
+
+        if (_colValue<1&&!CollideOnce)
         {
-
            
-            if (Mathf.Abs(rb.velocity.z) > Mathf.Abs(collision.gameObject.GetComponent<cube>().rb.velocity.z))
+            if (this.isActiveAndEnabled)
+           StartCoroutine(Blink());
+            CollideOnce = true;
+             _particles = _particlePool.Get(_particlePool.Collision);
+            _particles.Initialized(transform.position);
+          
+            if (trail!=null&& trail.isActiveAndEnabled)
             {
-                FindObjectOfType<SwichManager>().Comboo();
+                ProMaxsUtils.Instance.vibrate();
+                //  Debug.Log(collision.gameObject);
+                trail.Release();
+                trail = null;
                 
-                midpos = (transform.position + collision.transform.position) / 2;
-                FindObjectOfType<cubeInsantiater>().InsantiateshootCube(midpos, value * 2);
-              
-                Destroy(collision.gameObject);
+            }
+           
+        }
+        _colValue--;
 
-                Destroy(gameObject);
+        if (collision.gameObject.CompareTag(box))
+        {
+            _anotherCube = collision.gameObject.GetComponent<Cube>();
+
+
+            if (_anotherCube.Value == Value&&Value>-1)
+            {
+            
+
+                if (_id > collision.gameObject.GetInstanceID())
+                {
+                    //Only oncss
+                    midpos = (transform.position + collision.transform.position) * .5f;
+                    _cubeInstantiater.InsantiateshootCube(midpos, Value +1);
+                  
+                }
+                if (this.isActiveAndEnabled)
+                {
+                    _cubeInstantiater.GroundCubes.Remove(this);
+                    _cubePool.Release(this);
+                }
+
                
             }
 
-        }
 
-        else if (collision.gameObject.tag == "box")
-        {
 
-            if (bomb)
+            else if (bomb)
             {
-                Instantiate(Bombpart, transform.position, Quaternion.identity);
-                FindObjectOfType<MusicVibrate>().bomb.Play();
-                FindObjectOfType<CameraController>().ShakeCamera(.25f, .5f);
-                Instantiate(CoinPart,transform.position,Quaternion.identity);
-                Instantiate(DollarPart,transform.position,Quaternion.identity);
-                Destroy(collision.gameObject);
-                Destroy(gameObject);
-            }
 
-            if (GetComponent<TrailRenderer>().enabled)
-            {
-                GetComponent<TrailRenderer>().enabled = false;
-            }
-            if (sound && !notjelly)
-            {
-                if (PlayerPrefs.GetInt("Silent", 0) == 0)
+                if (_anotherCube.Value == -1)
                 {
+                    if (_id > collision.gameObject.GetInstanceID())
+                    {
+                        //OnlyOness
+                        _cameraController.ShakeCamera(.25f, .5f);
 
-                    Vibration.Vibrate(55);
+                        _particles = _particlePool.Get(_particlePool.Explosion);
+                        _particles.Initialized(transform.position);
+                        Sounds.PlaySoundSource(1);
+                        ProMaxsUtils.Instance.vibrate();
+                    }
+                    //  Debug.Log("BothAreBombsWow");
+                    if (this.isActiveAndEnabled)
+                    
+                        _bombPool.Release(this);
+                   
+
+                    return;
                 }
-                sound = false;
-                FindObjectOfType<MusicVibrate>().tak.Play();
-                Instantiate(StrikePart, transform.position, Quaternion.identity);
+
+                _particles = _particlePool.Get(_particlePool.Explosion);
+                _particles.Initialized(transform.position);
+               
+                _cameraController.ShakeCamera(.25f, .5f);
+               // Debug.Log("BombCollideToObj");
+                if (this.isActiveAndEnabled)
+                    _bombPool.Release(this);
+
+                Sounds.PlaySoundSource(1);
+                ProMaxsUtils.Instance.vibrate();
+
             }
+            else if (_anotherCube.Value==-1)
+            {    //Object Collide To Bomb
+              
+                if (this.isActiveAndEnabled)
+                {
+                    _cubeInstantiater.GroundCubes.Remove(this);
+                    _cubePool.Release(this);
+
+                }
+             //   Sounds.PlaySoundSource(1);
+
+                // Debug.Log("ObjectCollideToBomb");
+            }
+
         }
 
+
+       
     }
 
+    public void DestroyCube()
+    {
+        if (this.isActiveAndEnabled)
+        {
+            _cubeInstantiater.GroundCubes.Remove(this);
+            _cubePool.Release(this);
 
+        }
+    }
+
+   
 
 }
-
-     
-   
-    
-

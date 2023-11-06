@@ -1,0 +1,114 @@
+fileFormatVersion: 2
+guid: f54e5e9e4703e2744b4c180db8bc3ad3
+SpriteAtlasImporter:
+  externalObjects: {}
+  textureSettings:
+    serializedVersion: 2
+    anisoLevel: 1
+    compressionQuality: 50
+    maxTextureSize: 2048
+    textureCompression: 0
+    filterMode: 1
+    generateMipMaps: 0
+    readable: 0
+    crunchedCompression: 0
+    sRGB: 1
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 1
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: 65
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 1
+    allowsAlphaSplitting: 0
+    overridden: 1
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  packingSettings:
+    serializedVersion: 2
+    padding: 8
+    blockOffset: 1
+    allowAlphaSplitting: 0
+    enableRotation: 0
+    enableTightPacking: 1
+    enableAlphaDilation: 0
+  secondaryTextureSettings:
+    shop-background:
+      platformSettings:
+      - serializedVersion: 3
+        buildTarget: DefaultTexturePlatform
+        maxTextureSize: 256
+        resizeAlgorithm: 0
+        textureFormat: -1
+        textureCompression: 1
+        compressionQuality: 50
+        crunchedCompression: 1
+        allowsAlphaSplitting: 0
+        overridden: 0
+        ignorePlatformSupport: 0
+        androidETC2FallbackOverride: 0
+        forceMaximumCompressionQuality_BC6H_BC7: 0
+      - serializedVersion: 3
+        buildTarget: Android
+        maxTextureSize: 1024
+        resizeAlgorithm: 0
+        textureFormat: 65
+        textureCompression: 1
+        compressionQuality: 50
+        crunchedCompression: 1
+        allowsAlphaSplitting: 0
+        overridden: 1
+        ignorePlatformSupport: 0
+        androidETC2FallbackOverride: 0
+        forceMaximumCompressionQuality_BC6H_BC7: 0
+      sRGB: 1
+    close:
+      platformSettings:
+      - serializedVersion: 3
+        buildTarget: DefaultTexturePlatform
+        maxTextureSize: 1024
+        resizeAlgorithm: 0
+        textureFormat: -1
+        textureCompression: 1
+        compressionQuality: 50
+        crunchedCompression: 1
+        allowsAlphaSplitting: 0
+        overridden: 0
+        ignorePlatformSupport: 0
+        androidETC2FallbackOverride: 0
+        forceMaximumCompressionQuality_BC6H_BC7: 0
+      - serializedVersion: 3
+        buildTarget: Android
+        maxTextureSize: 1024
+        resizeAlgorithm: 0
+        textureFormat: 65
+        textureCompression: 1
+        compressionQuality: 50
+        crunchedCompression: 1
+        allowsAlphaSplitting: 0
+        overridden: 1
+        ignorePlatformSupport: 0
+        androidETC2FallbackOverride: 0
+        forceMaximumCompressionQuality_BC6H_BC7: 0
+      sRGB: 1
+  variantMultiplier: 1
+  bindAsDefault: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

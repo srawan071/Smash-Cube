@@ -1,0 +1,46 @@
+Library: C:\Users\Srawan\Desktop\Play Enjoy\Smash-Cube\Temp\BurstOutput\tempburstlibs\armeabi-v7a\lib_burst_generated
+--platform=Android
+--backend=burst-llvm-15
+--target=ARMV7A_NEON32
+--global-safety-checks-setting=Off
+--meta-data-generation=False
+--dump=Function
+--float-precision=Standard
+--assembly-defines=Assembly-CSharp;
+--assembly-defines=Mono.Security;
+--assembly-defines=mscorlib;
+--assembly-defines=System.Core;
+--assembly-defines=System;
+--assembly-defines=System.Numerics;
+--assembly-defines=System.Xml;
+--assembly-defines=Unity.2D.Animation.Runtime;
+--assembly-defines=Unity.AdaptivePerformance;
+--assembly-defines=Unity.AdaptivePerformance.Google.Android;
+--assembly-defines=Unity.AdaptivePerformance.Samsung.Android;
+--assembly-defines=Unity.Burst;
+--assembly-defines=Unity.Burst.Unsafe;
+--assembly-defines=Unity.Collections;
+--assembly-defines=Unity.InputSystem;
+--assembly-defines=Unity.InternalAPIEngineBridge.001;
+--assembly-defines=Unity.Mathematics;
+--assembly-defines=Unity.Profiling.Core;
+--assembly-defines=Unity.RenderPipeline.Universal.ShaderLibrary;
+--assembly-defines=Unity.RenderPipelines.Core.Runtime;
+--assembly-defines=Unity.RenderPipelines.Universal.Runtime;
+--assembly-defines=Unity.TextMeshPro;
+--assembly-defines=UnityEngine;
+--generate-link-xml=Temp\burst.link.xml
+--temp-folder=C:\Users\Srawan\Desktop\Play Enjoy\Smash-Cube\Temp\Burst
+--key-folder=C:/Program Files/Unity/2022.3.7f1/Editor/Data/PlaybackEngines/AndroidPlayer
+--decode-folder=C:\Users\Srawan\Desktop\Play Enjoy\Smash-Cube\Library\Burst
+--output=C:\Users\Srawan\Desktop\Play Enjoy\Smash-Cube\Temp\BurstOutput\tempburstlibs\armeabi-v7a\lib_burst_generated
+--pdb-search-paths=Temp/ManagedSymbols/
+
+--method=Unity.Burst.BurstCompiler+BurstCompilerHelper, Unity.Burst, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null::IsBurstEnabled()--8c2be93e18276203cbd918daa2748a10
+--method=Unity.Collections.xxHash3, Unity.Collections, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null::Hash64Long(System.Byte*, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|System.Byte*, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|System.Int64, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|System.Byte*, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089)--93df17b7366cd622dfa5ea2d3c75cf0b
+--method=UnityEngine.U2D.Animation.BurstedSpriteSkinUtilities, Unity.2D.Animation.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null::ValidateBoneWeights(UnityEngine.U2D.Animation.NativeCustomSlice`1[[UnityEngine.BoneWeight, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]&, Unity.2D.Animation.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089)--9425db96a9fb33479746c6501570455e
+--method=Unity.Collections.xxHash3, Unity.Collections, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null::Hash128Long(System.Byte*, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|System.Byte*, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|System.Int64, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|System.Byte*, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|Unity.Mathematics.uint4&, Unity.Mathematics, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null)--f7daf29273ab2f86d86c27c3a1d6eeb5
+--method=Unity.Collections.RewindableAllocator, Unity.Collections, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null::Try(System.IntPtr, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|Unity.Collections.AllocatorManager+Block&, Unity.Collections, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null)--cf20d690c33ab495d44c548cd6a31428
+--method=Unity.Collections.AllocatorManager+SlabAllocator, Unity.Collections, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null::Try(System.IntPtr, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|Unity.Collections.AllocatorManager+Block&, Unity.Collections, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null)--2434a4c10d01dbab5e7438b2b580d1d1
+--method=Unity.Collections.AllocatorManager+StackAllocator, Unity.Collections, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null::Try(System.IntPtr, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089|Unity.Collections.AllocatorManager+Block&, Unity.Collections, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null)--478bf3abafa12cba2083fb45bca79b9c
+

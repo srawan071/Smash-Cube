@@ -11,12 +11,14 @@ public class CameraController : MonoBehaviour
     public MeshRenderer ms;
     public Color[] color;
     public int [,] Try;
+    private Vector3 _CamInitialPos;
    
     void Start()
     {
+        _CamInitialPos = transform.position;
         UpdateBg();
-        startpos = new Vector3(0, 12, -15);
-        desiredpos = new Vector3(0, 12, -8.25f);
+        startpos = transform.position;
+        desiredpos = _CamInitialPos;
         lerp = true;
         transform.position = startpos;
         Invoke("offlerp", 5f);
@@ -25,7 +27,7 @@ public class CameraController : MonoBehaviour
     {
        
         int value = Random.Range(0, color.Length);
-        if (GameData.Instance.CheckFile(true))
+        if (GameData.Instance.CheckFile())
         {
           
             value = GameData.Instance.currentSave.bgvalue;
@@ -36,7 +38,9 @@ public class CameraController : MonoBehaviour
         }
        
         ms.material.SetColor("_ColorB", color[value]);
+       // ms.sharedMaterial.color = color[value];
        
+
        
     }
     public void ShakeCamera(float duration ,float magnitude)
@@ -53,7 +57,7 @@ public class CameraController : MonoBehaviour
             float x = Startpos.x + Random.Range(-1, 1) * magnitude;
             float y = Startpos.y + Random.Range(-1, 1) * magnitude;
             transform.position = new Vector3(x, y, transform.position.z);
-            time += Time.deltaTime;
+            time += Time.unscaledDeltaTime;
            
 
             yield return null;
