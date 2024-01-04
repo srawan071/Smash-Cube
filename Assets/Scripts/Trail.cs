@@ -39,11 +39,13 @@ public class Trail : MonoBehaviour
     }
     public void Release()
     {
-      
+        if (this.isActiveAndEnabled)
+        {
             transform.SetParent(null);
             _trail.enabled = false;
+
             _pool.Release(this);
-       
+        }
        
     }
     public void Initialized(Color color,Transform target)

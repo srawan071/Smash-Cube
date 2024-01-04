@@ -23,7 +23,9 @@ public class PlayercubeHolder : MonoBehaviour
    
     [SerializeField]
     private float _dragSpeed;
-
+    private float _Xclamp;
+    [SerializeField]
+    private ShopData _shopData;
 
     private void Awake()
     {
@@ -57,7 +59,7 @@ public class PlayercubeHolder : MonoBehaviour
         if (_shoot&& _playerCube != null)
         {
             _tempPos += _playerControls.Player.Delta.ReadValue<Vector2>().x * Time.fixedDeltaTime * _dragSpeed;
-            _tempPos = Mathf.Clamp(_tempPos, -1.75f, 1.75f);
+            _tempPos = Mathf.Clamp(_tempPos, -_Xclamp, _Xclamp);
 
 
             _playerCube.rb.position = new Vector3(_tempPos, _playerCube.transform.position.y, _playerCube.transform.position.z);
@@ -123,7 +125,17 @@ public class PlayercubeHolder : MonoBehaviour
             Target.SetActive(true);
             Target.transform.position = new Vector3(_playerCube.transform.position.x, 1, 1);
 
-           
+            if (_shopData.SkinSide == 0)
+            {
+                _Xclamp = 1.65f;
+
+            }
+            else
+            {
+                _Xclamp = 1.5f;
+            }
+
+
         }
     }
 }

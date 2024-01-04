@@ -67,17 +67,41 @@ public class Sounds : MonoBehaviour
         }
 
     }
-
+  static  bool play = true;
 
     public static void PlaySoundSource(int index)
     {
          if (ProMaxsUtils.Instance.Sound)
             {
+            if (play)
+            {
+                play = false;
+                
                 Sounds.source[index].Play();
             }
+            }
+        
         
     }
-
+    float t=0;
+    private void Update()
+    {
+        PlayTrue();
+    }
+   
+    void PlayTrue()
+    {
+        if (play == false)
+        {
+            t += Time.deltaTime;
+            if (t >.05f)
+            {
+                play = true;
+                t = 0;
+            }
+        }
+       
+    }
     public static void PlayTapSound()
     {
         if (ProMaxsUtils.Instance.Sound)

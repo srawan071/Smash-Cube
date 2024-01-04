@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ShowModel : MonoBehaviour
 {
-    // Start is called before the first frame update
+   
 
     [SerializeField] private MeshFilter _meshFilter;
       private Material _material;
@@ -28,18 +28,15 @@ public class ShowModel : MonoBehaviour
         if (_shopData.SkinSide == 0)
         {
             _meshFilter.mesh = _cube;
-           
             _material.SetTexture(_baseMap, _skinData.NormalSkin[_shopData.ActiveSkin]);
             
         }
         else
         {
             _meshFilter.mesh = _sphere;
-
             _material.SetTexture(_baseMap, _skinData.EpicSkin[_shopData.ActiveSkin]);
            
         }
-
         _material.SetTextureOffset(_baseMap, _offsetData.Offset[index+add] + Vector2.one * _offset);
        
       

@@ -19,6 +19,10 @@ namespace ProMaxUtils
         private TextMeshProUGUI Resolution;
         public Vector3 pos;
 
+
+        public static int QualityLevel;
+        [SerializeField]
+        private TextMeshProUGUI _qualityText;
         void Start()
         {
             
@@ -29,6 +33,8 @@ namespace ProMaxUtils
             Fps.text = Application.targetFrameRate.ToString();
             Resolution.text = Screen.width.ToString() + "X" + Screen.height.ToString();
 
+
+            UpdateQualityText();
 
 
         }
@@ -205,6 +211,31 @@ namespace ProMaxUtils
         public void FpsBtn()
         {
             FindObjectOfType<Quality>().FPSButton();
+        }
+
+
+        public void ToggleQualityLevel()
+        {
+          //  Debug.Log("Clicked");
+            Quality.ToggleQuality();
+
+            UpdateQualityText();
+        }
+
+        private void UpdateQualityText()
+        {
+            switch (Quality.QualityLevel)
+            {
+                case 0:
+                    _qualityText.SetText("<Low>");
+                    break;
+                case 1:
+                    _qualityText.SetText("<Medium>");
+                    break;
+                case 2:
+                    _qualityText.SetText("<High>");
+                    break;
+            }
         }
     }
 }

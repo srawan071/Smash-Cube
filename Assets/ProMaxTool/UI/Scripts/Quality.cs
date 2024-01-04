@@ -3,11 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class Quality : MonoBehaviour
 {
-   
-
-   
     public static int fps=30;
    
     public static int ResFactor=1;
@@ -15,13 +13,20 @@ public class Quality : MonoBehaviour
     public static event Action OnResolutionChange;
 
     static Vector2 OriginalResolution;
-    private void Start()
+    public static int QualityLevel;
+   
+    void Start()
     {
+        
         Application.targetFrameRate = fps;
         OriginalResolution = new Vector2(Screen.width, Screen.height);
-        //ResolutionButton();
-        SetAbsoluteResolution(720);
-       
+      //  ResolutionButton();
+         SetAbsoluteResolution(720);
+        
+      // ResDebug();
+        QualityLevel = PlayerPrefs.GetInt("QUALITY_LEVEL",2);
+
+        QualitySettings.SetQualityLevel(QualityLevel);
 
     }
     public void FPSButton()
@@ -52,5 +57,29 @@ public class Quality : MonoBehaviour
       //  Debug.Log(tempRes);
         Screen.SetResolution((int)tempRes.x, (int)tempRes.y,true);
      //   Debug.Log(Screen.dpi+"DPI");
+    }
+
+
+    public static void ToggleQuality()
+    {
+
+        QualityLevel++;
+        if (QualityLevel > 2)
+            QualityLevel = 0;
+        QualitySettings.SetQualityLevel(QualityLevel);
+        PlayerPrefs.SetInt("QUALITY_LEVEL", QualityLevel);
+
+       // ResDebug();
+
+    }
+
+    public static void ResDebug()
+    {
+        OriginalResolution = new Vector2(Screen.width, Screen.height);
+        Debug.Log(OriginalResolution + "OriginalRes");
+
+        Debug.Log(Screen.currentResolution + "currentres");
+        Debug.Log(Display.main.systemWidth +"X" +Display.main.systemHeight + "NativeResolution");
+        Debug.Log(Display.main.renderingWidth +"X"+ Display.main.renderingHeight + "RenderingResolution");
     }
 }

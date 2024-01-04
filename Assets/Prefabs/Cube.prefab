@@ -73,6 +73,7 @@ MonoBehaviour:
   bomb: 0
   check: 0
   rb: {fileID: 1549198893083685204}
+  _colValue: 0
   _material: {fileID: 2100000, guid: bbc0412f80050f941886eddd50d1e80e, type: 2}
   _colider: {fileID: 1549198893083685208}
   _meshRenderer: {fileID: 1549198893083685209}

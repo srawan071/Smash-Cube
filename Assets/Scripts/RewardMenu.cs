@@ -34,6 +34,10 @@ public class RewardMenu :MonoBehaviour,IRewardable
 
     private int _value;
     [SerializeField] private GameObject _twinkleStars;
+    [SerializeField]
+    private Network _network;
+    [SerializeField]
+    private GameObject NoThanksBtn;
     private enum Type
     {
         normal,
@@ -49,15 +53,19 @@ public class RewardMenu :MonoBehaviour,IRewardable
         Time.timeScale = 1;
         _twinkleStars.SetActive(false);
         gameObject.SetActive(false);
-        Admanager.Instance.ShowFullScreenAd();
-
+       Admanager.Instance.ShowFullScreenAd();
+        _network.CheckInternet();
     }
     public void ClaimBtn()
     {
+#if UNITY_EDITOR
+        GetReward();
 
-        Admanager.Instance.ShowRewardedAd(this);
-      
+#endif
        
+         Admanager.Instance.ShowRewardedAd(this);
+
+
     }
     public void Initilized(int value)
     {
@@ -66,6 +74,9 @@ public class RewardMenu :MonoBehaviour,IRewardable
         RandomChooseReward();
         _twinkleStars.SetActive(true);
         Sounds.PlaySoundSource(4);
+
+        NoThanksBtn.SetActive(false);
+        StartCoroutine(EnableNoThanks());
     }
 
    private void RandomChooseReward()
@@ -213,6 +224,10 @@ public class RewardMenu :MonoBehaviour,IRewardable
             _cubeInstianter.BOMBInsantiation();
             
         }
+        else if (GameData.Instance.currentSave.PlayerCube.value == -2)
+        {
+            _cubeInstianter._2XInstiation();
+        }
 
         else if (value < 0)
         {
@@ -232,4 +247,11 @@ public class RewardMenu :MonoBehaviour,IRewardable
         gameObject.SetActive(false);
     }
    
+    IEnumerator EnableNoThanks()
+    {
+      //  yield return new WaitForSecondsRealtime(.5f);
+
+        yield return new WaitForSecondsRealtime(1f);
+        NoThanksBtn.SetActive(true);
+    }
 }

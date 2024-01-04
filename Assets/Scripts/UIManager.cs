@@ -16,6 +16,8 @@ public  class UIManager : MonoBehaviour
     public RewardMenu RewardMenu;
    [SerializeField] private GameObject BombUI;
     [SerializeField]
+    private GameObject _2XUI;
+    [SerializeField]
     private GameObject HighestSmashMenu;
     private void Awake()
     {
@@ -37,8 +39,10 @@ public  class UIManager : MonoBehaviour
     }
     private void OnGameStarted()
     {
-        _progressBarCube[0].transform.parent.gameObject.SetActive(true);
+       // _progressBarCube[0].transform.parent.gameObject.SetActive(true);
+        _progressBarCube[0].transform.root.gameObject.SetActive(true);
         BombUI.SetActive(true);
+        _2XUI.SetActive(true);
         UpdateProgressBarCube(GameManager.singleton.LocalBestCube>0? GameManager.singleton.LocalBestCube :GameManager.singleton.RewardThresHold-5);
     }
     
@@ -67,14 +71,7 @@ public  class UIManager : MonoBehaviour
         RewardMenu.Initilized(value);
 
     }
-    public void EnableGameOverMenu()
-    {
-        
-    }
-    public void EnableSettingMenu()
-    {
-
-    }
+   
     public void EnableHighSmashMenu()
     {
         HighestSmashMenu.SetActive(true);

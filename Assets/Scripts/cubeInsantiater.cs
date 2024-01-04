@@ -7,6 +7,7 @@ using UnityEngine.Pool;
 using ProMaxUtils;
 using Unity.Collections.LowLevel.Unsafe;
 
+
 public class cubeInsantiater : MonoBehaviour
 {
     public int Active, Inactive;
@@ -55,18 +56,21 @@ public class cubeInsantiater : MonoBehaviour
    [SerializeField] private SkinData _skinData;
     [SerializeField] public ShopData _shopData;
     [SerializeField] private Cube[] _cubetype;
-   
-    private void Awake()
-    {
 
+
+    IEnumerator Start()
+    {
         CheckSkin();
         CubePool = new ObjectPool<Cube>(CreateCubePool, null, RemoveToCubePool, actionOnDestroy: (obj) => Destroy(obj.gameObject), true, 25, 50);
         BombPool = new ObjectPool<Cube>(CreateBombPool, null, RemoveToBombPool, actionOnDestroy: (obj) => Destroy(obj.gameObject), true, 10, 20);
         CubePoolObj();
         BoomPoolObj();
 
+        GetNumbers();
+        XPos = .25f;
 
-
+        yield return null;
+        InsantiateNORmalCube(_Numbers[Random.Range(0, _Numbers.Length)]);
     }
     public void CheckSkin()
     {
@@ -106,15 +110,7 @@ public class cubeInsantiater : MonoBehaviour
 
         }
     }
-    IEnumerator Start()
-    {
-      
-        GetNumbers();
-        XPos = .25f;
-       
-        yield return null;
-        InsantiateNORmalCube(_Numbers[Random.Range(0, _Numbers.Length)]);
-    }
+  
 
     private void OnEnable()
     {
@@ -124,6 +120,9 @@ public class cubeInsantiater : MonoBehaviour
    
     void OnGameStarted()
     {
+      /*  GameAnalytics.NewProgressionEvent(GAProgressionStatus.Start, "Level", GameManager.singleton.LocalBestCube);
+        GameAnalytics.NewProgressionEvent(GAProgressionStatus.Start, "StartNumber", StartNumber);*/
+        GameManager.singleton.SaveData = true;
         GetNumbers();
         if (GameData.Instance.CheckFile())
         {
@@ -343,7 +342,7 @@ public class cubeInsantiater : MonoBehaviour
 
 
         yield return new WaitForSeconds(.25f);
-        if (Random.value <= .01f)
+        if (Random.value <0f)
         {
 
             BOMBInsantiation();
@@ -373,11 +372,11 @@ public class cubeInsantiater : MonoBehaviour
 
     }
 
-    public IEnumerator InsantiateBomb()
+    private IEnumerator InsantiateBomb()
     {
         // FindObjectOfType<MusicVibrate>().tap.Play();
 
-        if (_playerCubeHolder.transform.childCount > 0 && _playerCubeHolder._playerCube.Value!=-1)
+        if (_playerCubeHolder.transform.childCount > 0 &&_playerCubeHolder._playerCube.Value>-1)
         {
             // Destroy(_playerCubeHolder._playerCube.gameObject);
             DestroyPlayerCube();
@@ -387,6 +386,25 @@ public class cubeInsantiater : MonoBehaviour
         }
 
     }
+    public void SpawnBomb()
+    {
+        StartCoroutine(InsantiateBomb());
+    }
+    private IEnumerator Instiantiate2X()
+    {
+        if (_playerCubeHolder.transform.childCount > 0 && _playerCubeHolder._playerCube.Value>-1)
+        {
+            // Destroy(_playerCubeHolder._playerCube.gameObject);
+            DestroyPlayerCube();
+            yield return new WaitForSeconds(.1f);
+            _2XInstiation();
+
+        }
+    }
+    public void SpawnStart2X()
+    {
+        StartCoroutine(Instiantiate2X());
+    }
 
     public void StopAllCoroutine()
     {
@@ -394,13 +412,36 @@ public class cubeInsantiater : MonoBehaviour
     }
     public void DestroyPlayerCube()
     {
-        _playerCubeHolder._playerCube.trail.Release();
-        if (_playerCubeHolder._playerCube.bomb)
-            BombPool.Release(_playerCubeHolder._playerCube);
-        else
-        CubePool.Release(_playerCubeHolder._playerCube);
         if (c_swipeCube != null)
             StopCoroutine(c_swipeCube);
+
+
+        _playerCubeHolder._playerCube.trail.Release();
+        if (_playerCubeHolder._playerCube.Value == -2)
+        {
+            Destroy(_playerCubeHolder._playerCube.gameObject);
+            _playerCubeHolder._playerCube = null;
+        }
+        else
+        {
+            if (_playerCubeHolder._playerCube.isActiveAndEnabled)
+            {
+                if (_playerCubeHolder._playerCube.bomb)
+                    BombPool.Release(_playerCubeHolder._playerCube);
+                else
+                {
+
+                    CubePool.Release(_playerCubeHolder._playerCube);
+
+                }
+            }
+               
+        }
+          
+
+      
+        
+       
 
     }
     public void BOMBInsantiation()
@@ -418,7 +459,28 @@ public class cubeInsantiater : MonoBehaviour
         trail.Initialized(Color.black,bomb.transform);
         _playerCubeHolder._playerCube.InitializeBomb(trail);
     }
- 
+ public void _2XInstiation()
+    { int index = 0;
+        if (_shopData.SkinSide == 0)
+        {
+            index = 2;
+
+
+        }
+        else
+        {
+            index = 3;
+
+        }
+        var go = Instantiate(_cubetype[index], new Vector3(XPos, 1.5f, -3f), Quaternion.identity, _playerCubeHolder.transform);
+        _playerCubeHolder._playerCube = go;
+
+
+        Trail trail = _particlePool.Get();
+
+        trail.Initialized(Color.black, go.transform);
+        _playerCubeHolder._playerCube.Initialize2X(trail);
+    }
 
     public void InstantiateSwipeCube(float pos)
     {

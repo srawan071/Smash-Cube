@@ -1,3 +1,4 @@
+
 using ProMaxUtils;
 using System.Collections;
 using TMPro;
@@ -13,11 +14,12 @@ public class GameOverManu : MonoBehaviour, IRewardable
     [SerializeField] private Image circle;
     [SerializeField] private TextMeshProUGUI _timer;
     [SerializeField] private Pop_Up _PopUP;
+    [SerializeField]
+    private GameObject NoThanksBtn;
 
-   
-    
 
-   
+
+
     private void OnEnable()
     {
        
@@ -25,12 +27,18 @@ public class GameOverManu : MonoBehaviour, IRewardable
             StartCoroutine(CircleAnim());
         
         Sounds.PlaySoundSource(6);
+        NoThanksBtn.SetActive(false);
+        StartCoroutine(EnableNoThanks());
     }
     public void ContinueButton()
     {
+#if UNITY_EDITOR
+        GetReward();
+
+#endif
        
         Sounds.PlayTapSound();
-        Admanager.Instance.ShowRewardedAd(this);
+      Admanager.Instance.ShowRewardedAd(this);
     }
     public void Continue()
     {
@@ -64,10 +72,11 @@ public class GameOverManu : MonoBehaviour, IRewardable
     }
     public void Restart()
     {
-        Admanager.Instance.ShowFullScreenAd();
+       /* GameAnalytics.NewProgressionEvent(GAProgressionStatus.Fail, "Level",GameManager.singleton.LocalBestCube);*/
+       Admanager.Instance.ShowFullScreenAd();
         Sounds.PlayTapSound();
-        SceneManager.LoadScene(0);
-       
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
     }
     private IEnumerator CountDown()
     {
@@ -100,6 +109,14 @@ public class GameOverManu : MonoBehaviour, IRewardable
 
     public void GetReward()
     {
+        GameManager.singleton.SaveData = true;
         Continue();
+    }
+    IEnumerator EnableNoThanks()
+    {
+        //  yield return new WaitForSecondsRealtime(.5f);
+
+        yield return new WaitForSecondsRealtime(2f);
+        NoThanksBtn.SetActive(true);
     }
 }

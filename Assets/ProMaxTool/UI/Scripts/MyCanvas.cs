@@ -6,7 +6,7 @@ using UnityEngine;
 public class MyCanvas : MonoBehaviour
 {
 
-    private static RectTransform _rectTransform;
+    private  RectTransform _rectTransform;
    
     public RectTransform _TargetRect;
    
@@ -15,9 +15,12 @@ public class MyCanvas : MonoBehaviour
         _rectTransform = GetComponent<RectTransform>();
       
     }
-    private void Start()
+   
+    IEnumerator Start()
     {
+        yield return null;
         RefreshPanel();
+
     }
 
     public void RefreshPanel()
@@ -28,6 +31,11 @@ public class MyCanvas : MonoBehaviour
         _rectTransform.localPosition = _TargetRect.localPosition;
         _rectTransform.localScale = _TargetRect.localScale;
     }
-
+    private void OnApplicationPause(bool pause)
+    {
+        if (!pause)
+            RefreshPanel();
+       
+    }
 }
 

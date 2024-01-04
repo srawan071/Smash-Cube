@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.Pool;
 using ProMaxUtils;
+using static UnityEngine.ParticleSystem;
 
 public class Cube : MonoBehaviour
 {
@@ -99,7 +100,7 @@ public class Cube : MonoBehaviour
         _material.SetTextureOffset(_basemap, offset);
         _material.SetFloat(blinkValue, 0);
         gameObject.SetActive(true);
-        StartCoroutine(JellyCube(1.25f,_curveShoot));
+        StartCoroutine(JellyCube(1f,_curveShoot));
         StartCoroutine(EnableCheck());
        
         shoot();
@@ -161,18 +162,29 @@ public class Cube : MonoBehaviour
         gameObject.SetActive(true);
         rb.isKinematic = true;
         rb.interpolation = RigidbodyInterpolation.Interpolate;
-
-
-
     }
- 
+ public void Initialize2X(Trail Traill)
+    {
+        trail = Traill;
+        //  trail.transform.SetParent(transform);
+
+        _colValue = 1;
+        CollideOnce = false;
+
+        Value = -2;
+
+        
+        gameObject.SetActive(true);
+        rb.isKinematic = true;
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
+    }
 
     private void Update()
     {
        
         if (check)
         {
-            if (transform.position.z < -1.2f)
+            if (transform.position.z < -1.45f)
             {
                 check = false;
 
@@ -238,13 +250,15 @@ public class Cube : MonoBehaviour
       
 
         Vector3 angle = target.position - transform.position;
-        if (angle.x == 0 && angle.z == 0)
+     
+        if (target==this.transform)
         {
             angle.x = Random.Range(-2f, 2f);
-            angle.z = Random.Range(2f, 4f);
+            angle.z = Random.Range(-2f, 4f);
         }
-        
-        rb.velocity = Random.value>.1f? new Vector3(angle.x / 2, 7, angle.z / 2): new Vector3(angle.x / 2, Random.Range(8, 15), angle.z / 2);
+       // angle.Normalize();
+        angle /= 2;
+        rb.velocity = Random.value>.1f? new Vector3(angle.x, 7, angle.z): new Vector3(angle.x, Random.Range(8, 15), angle.z);
         if(_cubeInstantiater._shopData.SkinSide==0)
         rb.angularVelocity = new Vector3(2, 0, 3);
         else
@@ -275,7 +289,7 @@ public class Cube : MonoBehaviour
       
         float t = 0;
         int repeat=2;
-        float speed = 10f;
+        float speed = 8f;
         while (t<repeat)
         {
             t = Mathf.MoveTowards(t, repeat, Time.unscaledDeltaTime * speed);
@@ -319,6 +333,7 @@ public class Cube : MonoBehaviour
         }
         _colValue--;
 
+       
         if (collision.gameObject.CompareTag(box))
         {
             _anotherCube = collision.gameObject.GetComponent<Cube>();
@@ -383,8 +398,14 @@ public class Cube : MonoBehaviour
 
             }
             else if (_anotherCube.Value==-1)
-            {    //Object Collide To Bomb
-              
+            {
+                //2X collide to bomb so return from here
+                if (Value == -2)
+                    return;
+
+
+                //Object Collide To Bomb
+
                 if (this.isActiveAndEnabled)
                 {
                     _cubeInstantiater.GroundCubes.Remove(this);
@@ -396,6 +417,42 @@ public class Cube : MonoBehaviour
                 // Debug.Log("ObjectCollideToBomb");
             }
 
+        }
+        else if (collision.gameObject.CompareTag("2X"))
+        {
+            if (Value == -2)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            //bomb collide to 2X
+            if (bomb)
+            {
+                _particles = _particlePool.Get(_particlePool.Explosion);
+                _particles.Initialized(transform.position);
+
+                _cameraController.ShakeCamera(.25f, .5f);
+               
+                if (this.isActiveAndEnabled)
+                    _bombPool.Release(this);
+
+                Sounds.PlaySoundSource(1);
+                ProMaxsUtils.Instance.vibrate();
+            }
+            else
+            {
+                // Cube colide to 2X
+                midpos = (transform.position + collision.transform.position) * .5f;
+                _cubeInstantiater.InsantiateshootCube(midpos, Value + 1);
+
+                if (this.isActiveAndEnabled)
+                {
+                    _cubeInstantiater.GroundCubes.Remove(this);
+                    _cubePool.Release(this);
+
+                }
+            }
+            Destroy(collision.gameObject);
         }
 
 

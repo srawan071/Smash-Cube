@@ -7,6 +7,7 @@ TagManager:
   - box
   - FxTemporaire
   - bomb
+  - 2X
   layers:
   - Default
   - TransparentFX
@@ -17,7 +18,7 @@ TagManager:
   - Ground
   - Shop
   - Cube
-  - 
+  - 2X
   - 
   - 
   - 

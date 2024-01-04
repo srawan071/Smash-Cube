@@ -128,7 +128,7 @@ public class SwichManager : MonoBehaviour
         //  CombooText.transform.localPosition = new Vector3(0, 434.5f, -11f);
 
       
-        CombooText.anchoredPosition3D = new Vector3(0, -205f,-10f);
+        CombooText.anchoredPosition3D = new Vector3(0, -160f, -10f);
        
       //  _canvasGroup.alpha = 0;
         float t = 0;

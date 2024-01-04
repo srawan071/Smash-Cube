@@ -6,8 +6,9 @@ using System.Xml;
 using System.Xml.Serialization;
 using System.Linq;
 using System;
+using UnityEngine.Android;
 #if UNITY_ANDROID
-
+using Unity.Notifications.Android;
 #elif UNITY_IPHONE
 using Unity.Notifications.iOS;
 #endif
@@ -18,9 +19,12 @@ public class GameData : MonoBehaviour
     public static GameData Instance;
     public PlayercubeHolder PCH;
     public cubeInsantiater CI;
-   
-    
-   
+    private string _datapath;
+    [SerializeField]
+    private ShopData _shopData;
+
+
+
     public void Awake()
     {
         if (Instance == null)
@@ -36,10 +40,11 @@ public class GameData : MonoBehaviour
 
         PCH = FindObjectOfType<PlayercubeHolder>();
         CI = FindObjectOfType<cubeInsantiater>();
+     _datapath = Application.persistentDataPath + "/naya.json";
+    Load();
+        _shopData.LoadData();
+    
 
-        Load();
-      
-        
     }
     private void Start()
     {
@@ -51,7 +56,7 @@ public class GameData : MonoBehaviour
     {
         string dataPath =  Application.persistentDataPath;
         var serializer = new XmlSerializer(typeof(SaveFile));
-        var stream = new FileStream(dataPath + "/" + "naya" + ".save", FileMode.Create);
+        var stream = new FileStream(_datapath, FileMode.Create);
         serializer.Serialize(stream, currentSave);
         stream.Close();
        
@@ -59,10 +64,10 @@ public class GameData : MonoBehaviour
    public void Load()
     {
         string dataPath = Application.persistentDataPath;
-        if(System.IO.File.Exists(dataPath + "/" + "naya" + ".save"))
+        if(System.IO.File.Exists(_datapath))
         {
             var serializer = new XmlSerializer(typeof(SaveFile));
-            var stream = new FileStream(dataPath + "/" + "naya" + ".save", FileMode.Open);
+            var stream = new FileStream(_datapath, FileMode.Open);
             currentSave = serializer.Deserialize(stream) as SaveFile;
             stream.Close();
            
@@ -73,7 +78,7 @@ public class GameData : MonoBehaviour
     public bool CheckFile()
     {
         bool exist = false;
-        if (System.IO.File.Exists(Application.persistentDataPath + "/" + "naya" + ".save"))
+        if (System.IO.File.Exists(_datapath))
         {
             exist= true;
         }
@@ -86,9 +91,9 @@ public class GameData : MonoBehaviour
    public void Erase()
     {
         string dataPath = Application.persistentDataPath;
-        if (System.IO.File.Exists(dataPath + "/" + "naya" + ".save"))
+        if (System.IO.File.Exists(_datapath))
         {
-            File.Delete(dataPath + "/" + "naya" + ".save");
+            File.Delete(_datapath);
             
        }
         
@@ -98,7 +103,7 @@ public class GameData : MonoBehaviour
     {
 
         PCH = FindObjectOfType<PlayercubeHolder>();
-        if (PCH == null)
+        if (PCH == null|| !GameManager.singleton.SaveData)
             return;
         CI = FindObjectOfType<cubeInsantiater>();
         currentSave.score = CI.score;
@@ -120,8 +125,6 @@ public class GameData : MonoBehaviour
                 if (CI.transform.GetChild(i).transform.position.z < -1.0f)
                 {
                     
-                    
-
                     continue;
                 }
                 currentSave.savecube.Add(new SaveCube());
@@ -170,9 +173,10 @@ public class GameData : MonoBehaviour
 
 void Notify()
 {
-        /*
 
- #if UNITY_ANDROID
+#if UNITY_ANDROID
+
+       
         var c = new AndroidNotificationChannel()
         {
             Id = "channel_id",
@@ -192,7 +196,8 @@ void Notify()
         notification.SmallIcon = "small_wala";
         notification.LargeIcon = "big_wala";
 
-        notification.FireTime = System.DateTime.Now.AddHours(8);
+           notification.FireTime = System.DateTime.Now.AddHours(8);
+      // notification.FireTime = DateTime.Now.AddSeconds(20);
 
 
         AndroidNotificationCenter.SendNotification(notification, "channel_id");
@@ -226,7 +231,7 @@ void Notify()
 iOSNotificationCenter.ScheduleNotification(notification);
         
 #endif
-        */
+        
 
 }
     

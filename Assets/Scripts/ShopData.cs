@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
+
 
 [CreateAssetMenu(fileName = "ShopData", menuName = "ScriptableObjects/Shopdatamanager")]
 public class ShopData : ScriptableObject
@@ -15,23 +15,25 @@ public class ShopData : ScriptableObject
     public int ActiveSide;
     public int SkinSide;
     public int ActiveSkin;
+    private string _datapath;
 
     public void SaveData()
     {
-        string dataPath = Application.persistentDataPath;
+        _datapath = Application.persistentDataPath +  "/SkinData.json";
         var serializer = new XmlSerializer(typeof(SavedSkinData));
-        var stream = new FileStream(dataPath + "/" + "SkinData" + ".save", FileMode.Create);
+        var stream = new FileStream(_datapath, FileMode.Create);
         serializer.Serialize(stream, SavedSkindata);
         stream.Close();
         SetCurrentSkinData();
+
     }
     public void LoadData()
     {
-        string dataPath = Application.persistentDataPath;
-        if (System.IO.File.Exists(dataPath + "/" + "SkinData" + ".save"))
+        _datapath = Application.persistentDataPath + "/SkinData.json";
+        if (System.IO.File.Exists(_datapath))
         {
             var serializer = new XmlSerializer(typeof(SavedSkinData));
-            var stream = new FileStream(dataPath + "/" + "SkinData" + ".save", FileMode.Open);
+            var stream = new FileStream(_datapath, FileMode.Open);
             SavedSkindata = serializer.Deserialize(stream) as SavedSkinData;
             stream.Close();
            
@@ -53,17 +55,17 @@ public class ShopData : ScriptableObject
     }
     public void Erase()
     {
-        string dataPath = Application.persistentDataPath;
-        if (System.IO.File.Exists(dataPath + "/" + "SkinData" + ".save"))
+        _datapath = Application.persistentDataPath + "/SkinData.json";
+        if (System.IO.File.Exists(_datapath))
         {
-            File.Delete(dataPath + "/" + "SkinData" + ".save");
+            File.Delete(_datapath);
 
         }
 
     }
     public void Reset()
     {
-        Debug.Log("Reset");
+       // Debug.Log("Reset");
         Erase();
         SavedSkindata.LockedNormalIndexs.Clear();
         SavedSkindata.LockedEpicIndexs.Clear();

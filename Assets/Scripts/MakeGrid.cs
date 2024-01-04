@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
+
 using UnityEditor;
 using Unity.Collections.LowLevel.Unsafe;
 using System;

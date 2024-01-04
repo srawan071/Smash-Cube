@@ -1,18 +1,29 @@
-﻿using System.Collections;
+﻿using GameAnalyticsSDK;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Android;
 using UnityEngine.SceneManagement;
 
 public class preloader : MonoBehaviour
 {
-    void Start()
+  
+    private void Start()
     {
-        Invoke("loadScene", 2f);
+        if (!Permission.HasUserAuthorizedPermission("android.permission.POST_NOTIFICATIONS"))
+        {
+            Permission.RequestUserPermission("android.permission.POST_NOTIFICATIONS");
+        }
+        //  Debug.Log("after");
+        StartCoroutine(LoadLevel());
+        GameAnalytics.Initialize();
     }
 
-    void loadScene()
+    IEnumerator LoadLevel()
     {
-        SceneManager.LoadScene(1);
+        yield return new WaitForSeconds(.5f);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+
     }
-   
+
 }

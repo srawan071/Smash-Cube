@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -34,38 +35,19 @@ namespace ProMaxUtils
         [SerializeField] public GameObject _effect;
        // popup pop;
 
-        IEnumerator Start()
+       void  Start()
         {
-            yield return null;
-         
            
+
             UpdateVisuals();
-           
+
+          //  GameAnalytics.NewResourceEvent(GAResourceFlowType.Sink, "Grenade", 1, "Combat", "GrenadeThrow");
         }
 
         private void UpdateVisuals()
-        {/*
-            if (_shopData.SkinSide == 0)
-            {
-                _modelFilter.mesh = cube;
-                _modelStartNumberFilter.mesh = cube;
-
-                _ModelMat.SetTexture(_baseMap, _skinData.NormalSkin[_shopData.ActiveSkin]);
-                _ModelNumberMat.SetTexture(_baseMap, _skinData.NormalSkin[_shopData.ActiveSkin]);
-
-            }
-            else
-            {
-                _modelFilter.mesh = sphere;
-                _modelStartNumberFilter.mesh = sphere;
-                _ModelMat.SetTexture(_baseMap, _skinData.EpicSkin[_shopData.ActiveSkin]);
-                _ModelNumberMat.SetTexture(_baseMap, _skinData.EpicSkin[_shopData.ActiveSkin]);
-            }
-
-            _ModelMat.SetTextureOffset(_baseMap, _offsetData.Offset[GameManager.singleton.BestCube]+Vector2.one*_offset);
-            _ModelNumberMat.SetTextureOffset(_baseMap, _offsetData.Offset[_cubeInstianter.StartNumber + 1] + Vector2.one * _offset);*/
-            _bestCube.UpdateVisuals(GameManager.singleton.BestCube, 0);
-            _levelUpgrade.UpdateVisuals(_cubeInstianter.StartNumber, 1);
+        {
+            _bestCube.UpdateVisuals(PlayerPrefs.GetInt("BESTCUBE"), 0);
+            _levelUpgrade.UpdateVisuals(PlayerPrefs.GetInt("StartNumber", 5), 1);
             if (_cubeInstianter.StartNumber >= 29)
             {
                 UpgradeBtn.SetActive(false);
@@ -101,7 +83,10 @@ namespace ProMaxUtils
         }
         public void UpgradeStartNumberBtn()
         {
-           
+#if UNITY_EDITOR
+            GetReward();
+
+#endif
             Admanager.Instance.ShowRewardedAd(this);
         }
         public void OnUpgradeStartNumber()
@@ -120,7 +105,7 @@ namespace ProMaxUtils
         public void ShopBtn()
         {
             Sounds.PlayTapSound();
-            SceneManager.LoadScene(1);
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         }
 
         public void GetReward()

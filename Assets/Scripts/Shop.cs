@@ -106,6 +106,11 @@ public class Shop : MonoBehaviour, IRewardable
     }
     public void UnlockRandomBtn()
     {
+#if UNITY_EDITOR
+        GetReward();
+
+#endif
+       
         Admanager.Instance.ShowRewardedAd(this);
         Sounds.PlayTapSound();
     }
@@ -131,7 +136,7 @@ public class Shop : MonoBehaviour, IRewardable
     {
         // Destroy(this);
         //SceneManager.UnloadSceneAsync(1);
-       SceneManager.LoadScene(0);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex -1);
         Sounds.PlayTapSound();
     }
     public void NotmalItemClick(Transform transform)

@@ -604,21 +604,6 @@
 {
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
-    "m_ObjectId": "5a3ce36fdaa047bfac993d499a719942",
-    "m_Id": 8,
-    "m_DisplayName": "Bias",
-    "m_SlotType": 0,
-    "m_Hidden": false,
-    "m_ShaderOutputName": "Bias",
-    "m_StageCapability": 3,
-    "m_Value": -0.699999988079071,
-    "m_DefaultValue": 0.0,
-    "m_Labels": []
-}
-
-{
-    "m_SGVersion": 0,
-    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "5f70b692f6634f2ab21cd6d2c6ecdfbf",
     "m_Id": 4,
     "m_DisplayName": "R",
@@ -795,7 +780,7 @@
             "m_Id": "93ee67f752b649b6afb8dd9274cf3065"
         },
         {
-            "m_Id": "5a3ce36fdaa047bfac993d499a719942"
+            "m_Id": "c897b4f27e94433da43de8e4b65def9f"
         }
     ],
     "synonyms": [
@@ -1106,6 +1091,21 @@
     "m_ShaderOutputName": "A",
     "m_StageCapability": 2,
     "m_Value": 0.0,
+    "m_DefaultValue": 0.0,
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
+    "m_ObjectId": "c897b4f27e94433da43de8e4b65def9f",
+    "m_Id": 8,
+    "m_DisplayName": "Bias",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "Bias",
+    "m_StageCapability": 3,
+    "m_Value": -0.10000000149011612,
     "m_DefaultValue": 0.0,
     "m_Labels": []
 }

@@ -4,12 +4,13 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 
+
 public class GameManager : MonoBehaviour
 {
 
     public static GameManager singleton;
     public GameObject gameovermenu;
-    public bool isPaused, gameOver;
+    public bool isPaused, gameOver,SaveData;
 
   
     cubeInsantiater Cubeinstanstiater;
@@ -17,6 +18,7 @@ public class GameManager : MonoBehaviour
    
 
     public int BombAmount;
+    public int _2XAmt;
     public int Score;
     public int BestScore;
     public int BestCube;
@@ -36,11 +38,13 @@ public class GameManager : MonoBehaviour
   
       void Start()
     {
-      
-       BestCube = PlayerPrefs.GetInt("BESTCUBE");
+     
+
        
-       
+        BestCube = PlayerPrefs.GetInt("BESTCUBE",0);
+
         BombAmount = PlayerPrefs.GetInt("BOMB",9);
+        _2XAmt = PlayerPrefs.GetInt("2X", 5);
        
         RewardThresHold = PlayerPrefs.GetInt("StartNumber",5)+1;
        
@@ -63,6 +67,7 @@ public class GameManager : MonoBehaviour
         isPaused = true;
         Time.timeScale = 0;
         gameOver = true;
+        SaveData = false;
         gameovermenu.SetActive(true);
      
 
