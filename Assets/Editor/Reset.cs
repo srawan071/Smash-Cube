@@ -13,7 +13,7 @@ public  class Reset:MonoBehaviour
 
       
         PlayerPrefs.DeleteAll();
-        FindObjectOfType<GameData>().Erase();
+        FindAnyObjectByType<GameData>().Erase();
         FindFirstObjectByType<cubeInsantiater>()._shopData.Reset();
       
     }

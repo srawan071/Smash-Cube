@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviour
             singleton = this;
         else if (singleton != this)
             Destroy(gameObject);
-        Cubeinstanstiater = FindObjectOfType<cubeInsantiater>();
+        Cubeinstanstiater = FindAnyObjectByType<cubeInsantiater>();
     }
   
       void Start()

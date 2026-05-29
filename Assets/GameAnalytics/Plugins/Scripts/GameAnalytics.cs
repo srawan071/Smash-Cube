@@ -13,7 +13,7 @@ using UnityEditor;
 using System.IO;
 #endif
 
-#if UNITY_IOS
+#if UNITY_IOS || UNITY_TVOS
 using GameAnalyticsSDK.iOS;
 #endif
 
@@ -245,6 +245,12 @@ namespace GameAnalyticsSDK
             {
                 SetEnabledManualSessionHandling(true);
             }
+
+            EnableSDKInitEvent(SettingsGA.EnableSDKInitEvent);
+            EnableFpsHistogram(SettingsGA.EnableFPSHistogram);
+            EnableMemoryHistogram(SettingsGA.EnableMemoryHistogram);
+            EnableHealthHardwareInfo(SettingsGA.EnableHardwareTracking);
+
         }
 
         public static void Initialize ()
@@ -880,7 +886,32 @@ namespace GameAnalyticsSDK
         /// </summary>
         public static String GetUserId()
         {
-            return GA_Wrapper.getUserId();
+            if (Initialized)
+            {
+                return GA_Wrapper.getUserId();
+            }
+            else
+            {
+                return "";
+            }
+        }
+
+        /// <summary>
+        /// gets the current external user id (if any)
+        /// </summary>
+        public static String GetExternalUserId()
+        {
+            return GA_Wrapper.GetExternalUserId();
+        }
+
+        /// <summary>
+        /// Sets an optional external user id. Will be attached to every event. Has no impact on the GA process
+        /// Can be set or changed at any time
+        /// </summary>
+        /// <param name="externalUserId">External User identifier.</param>
+        public static void SetExternalUserId(string externalUserId)
+        {
+            GA_Wrapper.SetExternalUserId(externalUserId);
         }
 
         /// <summary>
@@ -1002,6 +1033,11 @@ namespace GameAnalyticsSDK
             return GA_Wrapper.GetRemoteConfigsContentAsString();
         }
 
+        public static string GetRemoteConfigsContentAsJSON()
+        {
+            return GA_Wrapper.GetRemoteConfigsContentAsJSON();
+        }
+
         // ----------------------- A/B TESTING ---------------------- //
         public static string GetABTestingId()
         {
@@ -1033,10 +1069,55 @@ namespace GameAnalyticsSDK
             return GA_Wrapper.StopTimer(key);
         }
 
+        // ----------------------- HEALTH EVENT --------------------------------------------//
+
+        /// <summary>
+        /// enable the SDK init event to automatically track the boot time (time from application launch to the GameAnalytics SDK initialization).
+        /// (Android & iOS ONLY)
+        /// </summary>
+        /// <param name="flag">should be enabled or not</param>
+        public static void EnableSDKInitEvent(bool flag)
+        {
+            GA_Setup.EnableSDKInitEvent(flag);
+        }
+
+        /// <summary>
+        ///  Enable FPS sampling across the entire session to ultimately send an FPS histogram via the Session Performance Event.
+        ///  (Android & iOS ONLY)
+        /// </summary>
+        /// <param name="flag">should be enabled or not</param>
+        public static void EnableFpsHistogram(bool flag)
+        {
+            GA_Setup.EnableFpsHistogram(flag);
+        }
+
+        /// <summary>
+        ///  Enable memory usage sampling across the entire session to ultimately send a memory usage histogram via the Session Performance Event.
+        /// (Android & iOS ONLY)
+        /// </summary>
+        /// <param name="flag">should be enabled or not</param>
+        public static void EnableMemoryHistogram(bool flag)
+        {
+            GA_Setup.EnableMemoryHistogram(flag);
+        }
+
+        /// <summary>
+        /// (EXPERIMENTAL) enable discovery of device hardware information like,
+        /// cpu model, number of cpu cores, GPU model, chipset/hardware (if available).
+        /// these data points are added as properties to existing health
+        /// events (error, SDK init, session performance) if those are enabled.
+        //  (Android & iOS ONLY)
+        /// </summary>
+        /// <param name="flag">should be enabled or not</param>
+        public static void EnableHealthHardwareInfo(bool flag)
+        {
+            GA_Setup.EnableHealthHardwareInfo(flag);
+        }
+
         // ----------------------- IOS 14+ APP TRACKING TRANSPARENCY ---------------------- //
         public static void RequestTrackingAuthorization(IGameAnalyticsATTListener listener)
         {
-#if UNITY_IOS
+#if UNITY_IOS || UNITY_TVOS
             GameAnalyticsATTClient.Instance.RequestTrackingAuthorization(listener);
 #endif
         }

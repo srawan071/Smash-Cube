@@ -18,7 +18,6 @@ public class GamePlayMenu : MonoBehaviour,IRewardable
     private cubeInsantiater _cubeInsantiater;
     [SerializeField]
     private UIManager _uiManager;
-    private int localHighCube=2;
 
     enum Reward
     {

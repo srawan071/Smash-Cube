@@ -81,7 +81,7 @@ public class PlayercubeHolder : MonoBehaviour
 
             _playerCube.outcheck();
           
-            _playerCube.rb.velocity = Vector3.forward * 18;
+            _playerCube.rb.linearVelocity = Vector3.forward * 18;
             cubeInstantiater.InstantiateSwipeCube(_tempPos);
             if(!_playerCube.bomb)
             cubeInstantiater.GroundCubes.Add(_playerCube);

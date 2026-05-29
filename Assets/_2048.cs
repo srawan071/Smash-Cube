@@ -48,7 +48,7 @@ public class _2048 : MonoBehaviour
             angle.x = Random.Range(-2f, 2f);
             angle.z = Random.Range(-2f, 4f);
         }
-        rb.velocity = new Vector3(1, 8, 15);
+        rb.linearVelocity = new Vector3(1, 8, 15);
       //  rb.velocity = Random.value > .1f ? new Vector3(angle.x / 2, 7, angle.z / 2) : new Vector3(angle.x / 2, Random.Range(8, 15), angle.z / 2);
     }
 }

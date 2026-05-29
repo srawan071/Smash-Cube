@@ -38,8 +38,8 @@ public class GameData : MonoBehaviour
         }
 
 
-        PCH = FindObjectOfType<PlayercubeHolder>();
-        CI = FindObjectOfType<cubeInsantiater>();
+        PCH = FindAnyObjectByType<PlayercubeHolder>();
+        CI = FindAnyObjectByType<cubeInsantiater>();
      _datapath = Application.persistentDataPath + "/naya.json";
     Load();
         _shopData.LoadData();
@@ -102,10 +102,10 @@ public class GameData : MonoBehaviour
   public  void SavingData()
     {
 
-        PCH = FindObjectOfType<PlayercubeHolder>();
+        PCH = FindAnyObjectByType<PlayercubeHolder>();
         if (PCH == null|| !GameManager.singleton.SaveData)
             return;
-        CI = FindObjectOfType<cubeInsantiater>();
+        CI = FindAnyObjectByType<cubeInsantiater>();
         currentSave.score = CI.score;
        
         currentSave.LocalHighestCube = GameManager.singleton.LocalBestCube;

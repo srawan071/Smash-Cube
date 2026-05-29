@@ -54,7 +54,7 @@ public class RewardMenu :MonoBehaviour,IRewardable
         _twinkleStars.SetActive(false);
         gameObject.SetActive(false);
        Admanager.Instance.ShowFullScreenAd();
-        _network.CheckInternet();
+     //   _network.CheckInternet();
     }
     public void ClaimBtn()
     {

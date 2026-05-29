@@ -21,7 +21,7 @@ namespace GameAnalyticsSDK.Editor
     [CustomEditor(typeof(GameAnalyticsSDK.Setup.Settings))]
     public class GA_SettingsInspector : UnityEditor.Editor
     {
-        public const bool IsCustomPackage = false;
+        public const bool IsCustomPackage = true;
         private const string AssetsPrependPath = IsCustomPackage ? "Packages/com.gameanalytics.sdk" : "Assets/GameAnalytics";
 
         private GUIContent _publicKeyLabel = new GUIContent("Game Key", "Your GameAnalytics Game Key - copy/paste from the GA website.");
@@ -37,14 +37,13 @@ namespace GameAnalyticsSDK.Editor
         private GUIContent _verboseLogBuild = new GUIContent("Verbose Log Build", "Show full info messages from GA in builds (f.x. Xcode for iOS). Noet that this option includes long JSON messages sent to the server.");
         private GUIContent _useManualSessionHandling = new GUIContent("Use manual session handling", "Manually choose when to end and start a new session. Note initializing of the SDK will automatically start the first session.");
 
-        private GUIContent _enableSDKInitEvent  = new GUIContent("Enable Startup Metrics", "Enables automatic startup performance data collection. This includes: application's boot time, general device specs (such as cpu model, number of cores, total memory, device resolution) and if this was the first time the user booted this application.");
+        private GUIContent _enableSDKInitEvent  = new GUIContent("Enable SDK Init Event (boot time on Android, iOS)", "Enable the SDK Init Event to automatically track the boot time (time from application launch to the GameAnalytics SDK initialization)");
         private GUIContent _enableHealthEvent   = new GUIContent("Enable Session Performance Metrics", "Enables automatic performance data collection across the whole session. This includes sampling fps, memory consumption & cpu usage without any noticeable performance impact.");
 
-        private GUIContent _enableAppBootTracking    = new GUIContent("Boot time", "Will collect data on application start-up time (from launch until GameAnalytics has been initialized)");
-        private GUIContent _enableMemoryTracking     = new GUIContent("Memory Snapshots", "Performance & error events will take memory usage snapshots");
-        private GUIContent _enableHardwareTracking   = new GUIContent("Hardware Info", "Data about the user's hardware info and usage will be collected");
-        private GUIContent _enableFPSHistogram       = new GUIContent("FPS Histogram", "Samples FPS across the whole session and compiles a histogram");
-        private GUIContent _enableMemoryHistogram    = new GUIContent("Memory Usage Histogram", "Samples memory usage across the whole session & compiles a histogram");
+        private GUIContent _enableMemoryTracking     = new GUIContent("Health Memory Snapshots (Android, iOS)", "Performance & error events will take memory usage snapshots");
+        private GUIContent _enableHardwareTracking   = new GUIContent("Health Hardware Info (Android, iOS)", "Memory information collected (if available) and added as properties to health events. Determining total device memory, system memory usage and app memory usage");
+        private GUIContent _enableFPSHistogram       = new GUIContent("Submit Session FPS Histogram (Android, iOS)", "Enable FPS sampling across the entire session to ultimately send an FPS histogram at the end of the session. FPS insights can be reviewed in the GameAnalytics Health feature");
+        private GUIContent _enableMemoryHistogram    = new GUIContent("Submit Memory Usage Histogram (Android, iOS)", "Enable memory usage sampling across the entire session to ultimately send an memory histogram at the end of the session. Memory insights can be reviewed in the GameAnalytics Health feature");
 
 #if UNITY_5_6_OR_NEWER
         private GUIContent _usePlayerSettingsBunldeVersionForBuild = new GUIContent("Send Version* (Android, iOS) as build number", "The SDK will automatically fetch the version* number on Android and iOS and send it as the GameAnalytics build number.");
@@ -52,7 +51,7 @@ namespace GameAnalyticsSDK.Editor
         private GUIContent _usePlayerSettingsBunldeVersionForBuild = new GUIContent("Send Build number (iOS) and Version* (Android) as build number", "The SDK will automatically fetch the build number on iOS and the version* number on Android and send it as the GameAnalytics build number.");
 #endif
         //private GUIContent _sendExampleToMyGame        = new GUIContent("Get Example Game Data", "If enabled data collected while playing the example tutorial game will be sent to your game (using your game key and secret key). Otherwise data will be sent to a premade GA test game, to prevent it from polluting your data.");
-        private GUIContent _account = new GUIContent("Account", "This tab allows you to easily create a GameAnalytics account. You can also login to automatically retrieve your Game Key and Secret Key.");
+        private GUIContent _account = new GUIContent("Account", "This tab allows you to login and automatically retrieve your Game Key and Secret Key.");
         private GUIContent _setup = new GUIContent("Setup", "This tab shows general options which are relevant for a wide variety of messages sent to GameAnalytics.");
         private GUIContent _advanced = new GUIContent("Advanced", "This tab shows advanced and misc. options for the GameAnalytics SDK.");
         private GUIContent _customDimensions01 = new GUIContent("Custom Dimensions 01", "List of custom dimensions 01.");
@@ -60,11 +59,11 @@ namespace GameAnalyticsSDK.Editor
         private GUIContent _customDimensions03 = new GUIContent("Custom Dimensions 03", "List of custom dimensions 03.");
         private GUIContent _resourceItemTypes = new GUIContent("Resource Item Types", "List of Resource Item Types.");
         private GUIContent _resourceCurrrencies = new GUIContent("Resource Currencies", "List of Resource Currencies.");
-        private GUIContent _gaFpsAverage = new GUIContent("Submit Average FPS", "Submit the average frames per second.");
-        private GUIContent _gaFpsCritical = new GUIContent("Submit Critical FPS", "Submit a message whenever the frames per second falls below a certain threshold. The location of the Track Target will be used for critical FPS events.");
+        private GUIContent _gaFpsAverage = new GUIContent("Submit Average FPS (Legacy)", "Submit the average frames per second. Warning: This FPS tracking approach will be replaced in a future update.");
+        private GUIContent _gaFpsCritical = new GUIContent("Submit Critical FPS (Legacy)", "Submit a message whenever the frames per second falls below a certain threshold. The location of the Track Target will be used for critical FPS events. Warning: This FPS tracking approach will be replaced in a future update.");
         private GUIContent _gaFpsCriticalThreshold = new GUIContent("FPS <", "Frames per second threshold.");
-        private GUIContent _gaSubmitErrors = new GUIContent("Submit Errors", "Submit error and exception messages to the GameAnalytics server. Useful for getting relevant data when the game crashes, etc.");
-        private GUIContent _gaNativeErrorReporting = new GUIContent("Native error reporting (Android, iOS)", "Submit error and exception messages from native errors and exceptions to the GameAnalytics server. Useful for getting relevant data when the game crashes, etc. from native code.");
+        private GUIContent _gaSubmitErrors = new GUIContent("Submit Unity Errors Automatically", "Submit error and exception messages to the GameAnalytics server. Useful for getting relevant data when the game crashes, etc.");
+        private GUIContent _gaNativeErrorReporting = new GUIContent("Submit Native Errors (Android, iOS) Automatically", "Submit error and exception messages from native errors and exceptions to the GameAnalytics server. Useful for getting relevant data when the game crashes, etc. from native code.");
 
         private GUIContent _gameSetupIcon;
         private bool _gameSetupIconOpen = false;
@@ -84,7 +83,7 @@ namespace GameAnalyticsSDK.Editor
 
         private GUIContent  _healthEventIcon;
         private bool        _healthEventIconOpen = false;
-        private GUIContent  _healthEventIconMsg  = new GUIContent("Enable automatic collection of performance metrics. Those will give you insight into your application's general performance such as fps, memory consumption and user hadrware");
+        private GUIContent  _healthEventIconMsg  = new GUIContent("Enable automatic tracking of events to discover and address issues related to how a game is technically running on devices/clients. Tracking options include errors, fps/memory usage histograms, app boot and hardware configuration");
 
         private GUIContent _deleteIcon;
         private GUIContent _homeIcon;
@@ -100,12 +99,31 @@ namespace GameAnalyticsSDK.Editor
 
         private const string _unityToken = "KKy7MQNc2TEUOeK0EMtR";
 
-        private const string _gaUrl = "https://userapi.gameanalytics.com/ext/v1/";
+        private const string _gaUrl = "https://platform.gameanalytics.com/ext/v1/";
+
+        private const string _gaToolUrl = "https://tool.gameanalytics.com";
+
+        private const string _gaForgotPasswordUrl = _gaToolUrl + "/forgot-password";
+
+        private const string _gaSettingsUrl = _gaToolUrl + "/game/{0}/settings/general";
+
+        private const string _gaOverviewUrl = _gaToolUrl + "/game/{0}/overview";
+
+        private const string _gaLoginUrl = _gaToolUrl + "/login?";
+
+        private const string _gaSignUpUrl = _gaToolUrl + "/signup";
+
+        private const string _gaSupportUrl = "http://support.gameanalytics.com/";
 
         private const int MaxNumberOfDimensions = 20;
 
         private int selectedPlatformIndex = 0;
         private string[] availablePlatforms;
+
+        private const int MAJOR_V = 0;
+        private const int MINOR_V = 1;
+        private const int PATCH_V = 2;
+        private const int ALL_V   = 3;
 
         void OnEnable()
         {
@@ -246,11 +264,11 @@ namespace GameAnalyticsSDK.Editor
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();
 
-            DrawLinkButton(_homeIcon, GUI.skin.label, "https://go.gameanalytics.com/login", GUILayout.Width(24), GUILayout.Height(24));
+            DrawLinkButton(_homeIcon, GUI.skin.label, _gaLoginUrl, GUILayout.Width(24), GUILayout.Height(24));
 
             DrawLinkButton(_questionIcon, GUI.skin.label, "http://support.gameanalytics.com/", GUILayout.Width(24), GUILayout.Height(24));
 
-            DrawButton(_instrumentIcon, GUI.skin.label, OpenSignUpSwitchToGuideStep, GUILayout.Width(24), GUILayout.Height(24));
+            DrawLinkButton(_instrumentIcon, GUI.skin.label, _gaSignUpUrl, GUILayout.Width(24), GUILayout.Height(24));
 
             GUILayout.EndHorizontal();
 
@@ -431,7 +449,7 @@ namespace GameAnalyticsSDK.Editor
                     GUILayout.BeginVertical();
                     GUILayout.Space(8);
 
-                    DrawLinkButton("Forgot password?", EditorStyles.label, "https://go.gameanalytics.com/login?showreset&email=" + ga.EmailGA, GUILayout.Width(105));
+                    DrawLinkButton("Forgot password?", EditorStyles.label, _gaForgotPasswordUrl, GUILayout.Width(105));
                     EditorGUIUtility.AddCursorRect(GUILayoutUtility.GetLastRect(), MouseCursor.Link);
                     GUILayout.EndVertical();
                     GUILayout.EndHorizontal();
@@ -569,36 +587,13 @@ namespace GameAnalyticsSDK.Editor
                         GUILayout.Space(14);
                         if (GUILayout.Button("Forgot password?", EditorStyles.label, GUILayout.Width(105)))
                         {
-                            Application.OpenURL("https://go.gameanalytics.com/login?showreset&email=" + ga.EmailGA);
+                            Application.OpenURL(_gaForgotPasswordUrl);
                         }
                         EditorGUIUtility.AddCursorRect(GUILayoutUtility.GetLastRect(), MouseCursor.Link);
                         GUILayout.EndVertical();
                         GUILayout.EndHorizontal();
 
                         GUILayout.Space(20);
-
-                        Splitter(new Color(0.35f, 0.35f, 0.35f));
-
-                        GUILayout.Space(16);
-
-                        GUILayout.BeginHorizontal();
-                        GUILayout.FlexibleSpace();
-                        if (GUILayout.Button("Sign up", new GUILayoutOption[] {
-                            GUILayout.Width(130),
-                            GUILayout.Height(40)
-                        }))
-                        {
-                            GA_SignUp signup = ScriptableObject.CreateInstance<GA_SignUp>();
-                            signup.maxSize = new Vector2(640, 600);
-                            signup.minSize = new Vector2(640, 600);
-                            signup.titleContent = new GUIContent("GameAnalytics - Sign up for FREE");
-                            signup.ShowUtility();
-                            signup.Opened();
-                        }
-                        GUILayout.FlexibleSpace();
-                        GUILayout.EndHorizontal();
-
-                        GUILayout.Space(16);
 
                         Splitter(new Color(0.35f, 0.35f, 0.35f));
 
@@ -665,7 +660,7 @@ namespace GameAnalyticsSDK.Editor
                         Rect tmpRect = GUILayoutUtility.GetLastRect();
                         if (GUI.Button(new Rect(tmpRect.x + 5, tmpRect.y + tmpRect.height - 25, 80, 20), "Learn more"))
                         {
-                            Application.OpenURL("https://github.com/GameAnalytics/GA-SDK-UNITY/wiki/Settings#setup");
+                            Application.OpenURL("https://docs.gameanalytics.com/integrations/sdk/unity");
                         }
                     }
                     #endregion // Setup help
@@ -691,17 +686,6 @@ namespace GameAnalyticsSDK.Editor
                             }
                             GUILayout.EndHorizontal();
                             EditorGUILayout.Space();
-                        }
-
-                        if (GUILayout.Button("Add game"))
-                        {
-                            GA_SignUp signup = ScriptableObject.CreateInstance<GA_SignUp>();
-                            signup.maxSize = new Vector2(640, 600);
-                            signup.minSize = new Vector2(640, 600);
-                            signup.TourStep = 1;
-                            signup.titleContent = new GUIContent("GameAnalytics - Sign up for FREE");
-                            signup.ShowUtility();
-                            signup.Opened();
                         }
 
                         GUILayout.BeginHorizontal();
@@ -927,22 +911,22 @@ namespace GameAnalyticsSDK.Editor
                                 {
                                     if (string.IsNullOrEmpty(ga.TokenGA))
                                     {
-                                        Application.OpenURL("https://go.gameanalytics.com/game/" + ga.SelectedPlatformGameID[i] + "/initialize");
+                                        Application.OpenURL(String.Format(_gaOverviewUrl, ga.SelectedPlatformGameID[i]));
                                     }
                                     else
                                     {
-                                        Application.OpenURL("https://go.gameanalytics.com/login?token=" + ga.TokenGA + "&exp=" + ga.ExpireTime + "&goto=/game/" + ga.SelectedPlatformGameID[i] + "/initialize");
+                                        Application.OpenURL(_gaLoginUrl);
                                     }
                                 }
                                 if (GUILayout.Button("Game Settings"))
                                 {
                                     if (string.IsNullOrEmpty(ga.TokenGA))
                                     {
-                                        Application.OpenURL("https://go.gameanalytics.com/game/" + ga.SelectedPlatformGameID[i] + "/settings");
+                                        Application.OpenURL(String.Format(_gaSettingsUrl, ga.SelectedPlatformGameID[i]));
                                     }
                                     else
                                     {
-                                        Application.OpenURL("https://go.gameanalytics.com/login?token=" + ga.TokenGA + "&exp=" + ga.ExpireTime + "&goto=/game/" + ga.SelectedPlatformGameID[i] + "/settings");
+                                        Application.OpenURL(_gaLoginUrl);
                                     }
                                 }
                                 GUILayout.EndHorizontal();
@@ -979,26 +963,8 @@ namespace GameAnalyticsSDK.Editor
                         this.selectedPlatformIndex = 0;
                     }
 
-#if UNITY_IOS || UNITY_TVOS
-
-                    EditorGUILayout.Space();
-
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Label("", GUILayout.Width(-18));
-                    EditorGUILayout.HelpBox("PLEASE NOTICE: Xcode needs to be configured to work with GameAnalytics. Click here to learn more about the build process for iOS.", MessageType.Info);
-
-                    if(GUI.Button(GUILayoutUtility.GetLastRect(), "", GUIStyle.none))
-                    {
-                        Application.OpenURL("https://github.com/GameAnalytics/GA-SDK-UNITY/wiki/Configure%20XCode");
-                    }
-                    EditorGUIUtility.AddCursorRect(GUILayoutUtility.GetLastRect(), MouseCursor.Link);
-
-                    GUILayout.EndHorizontal();
-
-#elif UNITY_ANDROID || UNITY_STANDALONE || UNITY_WEBGL || UNITY_WSA || UNITY_WP_8_1 || UNITY_TIZEN || UNITY_SAMSUNGTV
-
+#if UNITY_IOS || UNITY_TVOS || UNITY_ANDROID || UNITY_STANDALONE || UNITY_WEBGL || UNITY_WSA || UNITY_WP_8_1 || UNITY_SAMSUNGTV
                     // Do nothing
-
 #else
 
                     EditorGUILayout.Space();
@@ -1016,7 +982,6 @@ namespace GameAnalyticsSDK.Editor
                     GUILayout.EndHorizontal();
 
 #endif
-
                     EditorGUILayout.Space();
                     EditorGUILayout.Space();
                     EditorGUILayout.Space();
@@ -1061,7 +1026,7 @@ namespace GameAnalyticsSDK.Editor
                         Rect tmpRect = GUILayoutUtility.GetLastRect();
                         if (GUI.Button(new Rect(tmpRect.x + 5, tmpRect.y + tmpRect.height - 25, 80, 20), "Learn more"))
                         {
-                            Application.OpenURL("https://github.com/GameAnalytics/GA-SDK-UNITY/wiki/Settings#custom-dimensions");
+                            Application.OpenURL("https://docs.gameanalytics.com/integrations/sdk/unity/advanced-setup#custom-dimensions");
                         }
                     }
 
@@ -1250,7 +1215,7 @@ namespace GameAnalyticsSDK.Editor
                         Rect tmpRect = GUILayoutUtility.GetLastRect();
                         if (GUI.Button(new Rect(tmpRect.x + 5, tmpRect.y + tmpRect.height - 25, 80, 20), "Learn more"))
                         {
-                            Application.OpenURL("https://github.com/GameAnalytics/GA-SDK-UNITY/wiki/Settings#resource-types");
+                            Application.OpenURL("https://docs.gameanalytics.com/integrations/sdk/unity/advanced-setup#resource-types");
                         }
                     }
 
@@ -1397,7 +1362,7 @@ namespace GameAnalyticsSDK.Editor
                         Rect tmpRect = GUILayoutUtility.GetLastRect();
                         if (GUI.Button(new Rect(tmpRect.x + 5, tmpRect.y + tmpRect.height - 25, 80, 20), "Learn more"))
                         {
-                            Application.OpenURL("https://github.com/GameAnalytics/GA-SDK-UNITY/wiki/Settings#advanced");
+                            Application.OpenURL("https://docs.gameanalytics.com/integrations/sdk/unity/advanced-setup#advanced-settings");
                         }
                     }
 
@@ -1431,22 +1396,6 @@ namespace GameAnalyticsSDK.Editor
 
                     GUILayout.BeginHorizontal();
                     GUILayout.Label("", GUILayout.Width(-18));
-                    ga.SubmitErrors = EditorGUILayout.Toggle("", ga.SubmitErrors, GUILayout.Width(35));
-                    GUILayout.Label(_gaSubmitErrors);
-                    GUILayout.EndHorizontal();
-
-                    EditorGUILayout.Space();
-
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Label("", GUILayout.Width(-18));
-                    ga.NativeErrorReporting = EditorGUILayout.Toggle("", ga.NativeErrorReporting, GUILayout.Width(35));
-                    GUILayout.Label(_gaNativeErrorReporting);
-                    GUILayout.EndHorizontal();
-
-                    EditorGUILayout.Space();
-
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Label("", GUILayout.Width(-18));
                     ga.SubmitFpsAverage = EditorGUILayout.Toggle("", ga.SubmitFpsAverage, GUILayout.Width(35));
                     GUILayout.Label(_gaFpsAverage);
                     GUILayout.EndHorizontal();
@@ -1454,7 +1403,7 @@ namespace GameAnalyticsSDK.Editor
                     GUILayout.BeginHorizontal();
                     GUILayout.Label("", GUILayout.Width(-18));
                     ga.SubmitFpsCritical = EditorGUILayout.Toggle("", ga.SubmitFpsCritical, GUILayout.Width(35));
-                    GUILayout.Label(_gaFpsCritical, GUILayout.Width(135));
+                    GUILayout.Label(_gaFpsCritical, GUILayout.Width(200));
                     GUI.enabled = ga.SubmitFpsCritical;
                     GUILayout.Label(_gaFpsCriticalThreshold, GUILayout.Width(40));
                     GUILayout.Label("", GUILayout.Width(-26));
@@ -1514,7 +1463,7 @@ namespace GameAnalyticsSDK.Editor
                         Rect tmpRect = GUILayoutUtility.GetLastRect();
                         if (GUI.Button(new Rect(tmpRect.x + 5, tmpRect.y + tmpRect.height - 25, 80, 20), "Learn more"))
                         {
-                            Application.OpenURL("https://github.com/GameAnalytics/GA-SDK-UNITY/wiki/Settings#debug-settings");
+                            Application.OpenURL("https://docs.gameanalytics.com/integrations/sdk/unity/advanced-setup#advanced-settings");
                         }
                     }
 
@@ -1544,21 +1493,31 @@ namespace GameAnalyticsSDK.Editor
                     EditorGUILayout.Space();
 
                     const int layoutWidth   = 35;
-                    const int btnSize       = 12;
 
                     GUILayout.BeginVertical("Performance");
 
                         GUILayout.BeginHorizontal();
-                        //GUILayout.Space(-4);
-                        GUILayout.Label("Performance Metrics (EXPERIMENTAL)", EditorStyles.largeLabel);
 
-                        if (GUILayout.Button(_healthEventIcon, EditorStyles.iconButton, new GUILayoutOption[] {
-                            GUILayout.Width(btnSize),
-                            GUILayout.Height(btnSize)
-                        }))
-                        {
-                            _healthEventIconOpen = !_healthEventIconOpen;
-                        }
+                            GUILayout.BeginVertical();
+                            GUILayout.Space(-4);
+                            GUILayout.Label("Health Tracking", EditorStyles.largeLabel);
+                            GUILayout.EndVertical();
+
+                            if (!_healthEventIconOpen)
+                            {
+                                GUI.color = new Color(0.54f, 0.54f, 0.54f);
+                            }
+                            if (GUILayout.Button(_debugSettingsIcon, GUIStyle.none, new GUILayoutOption[] {
+                                GUILayout.Width(12),
+                                GUILayout.Height(12)
+                            }))
+                            {
+                                _healthEventIconOpen = !_healthEventIconOpen;
+                            }
+                            GUI.color = Color.white;
+                            EditorGUIUtility.AddCursorRect(GUILayoutUtility.GetLastRect(), MouseCursor.Link);
+                            GUILayout.FlexibleSpace();
+
                         GUILayout.EndHorizontal();
 
                         if (_healthEventIconOpen)
@@ -1579,42 +1538,36 @@ namespace GameAnalyticsSDK.Editor
                             Rect tmpRect = GUILayoutUtility.GetLastRect();
                             if (GUI.Button(new Rect(tmpRect.x + 5, tmpRect.y + tmpRect.height - 25, 80, 20), "Learn more"))
                             {
-                                Application.OpenURL("https://docs.gameanalytics.com");
+                                Application.OpenURL("https://docs.gameanalytics.com/features/health");
                             }
                         }
 
                         EditorGUILayout.Space();
-
-                        GUILayout.BeginHorizontal();
-                        GUILayout.Label(_enableHardwareTracking);
-                        ga.EnableHardwareTracking = EditorGUILayout.Toggle("", ga.EnableHardwareTracking, GUILayout.Width(layoutWidth));
-                        GUILayout.EndHorizontal();
-
-                        GUILayout.BeginHorizontal();
-                        GUILayout.Label(_enableMemoryTracking);
-                        ga.EnableMemoryTracking = EditorGUILayout.Toggle("", ga.EnableMemoryTracking, GUILayout.Width(layoutWidth));
-                        GUILayout.EndHorizontal();
-
-                        EditorGUILayout.Space();
                         EditorGUILayout.Space();
 
-                        GUILayout.BeginVertical("Startup Performance");
+                        GUILayout.BeginVertical("General");
 
                             GUILayout.BeginHorizontal();
                             GUILayout.Space(-12);
-                            EditorGUILayout.LabelField("Startup Performance", EditorStyles.boldLabel);
+                            EditorGUILayout.LabelField("General", EditorStyles.boldLabel);
                             GUILayout.EndHorizontal();
 
-                            EditorGUILayout.Space();
+                            GUILayout.BeginHorizontal();
+                            GUILayout.Label("", GUILayout.Width(-18));
+                            ga.SubmitErrors = EditorGUILayout.Toggle("", ga.SubmitErrors, GUILayout.Width(35));
+                            GUILayout.Label(_gaSubmitErrors);
+                            GUILayout.EndHorizontal();
 
                             GUILayout.BeginHorizontal();
-                            GUILayout.Label(_enableSDKInitEvent);
+                            GUILayout.Label("", GUILayout.Width(-18));
+                            ga.NativeErrorReporting = EditorGUILayout.Toggle("", ga.NativeErrorReporting, GUILayout.Width(35));
+                            GUILayout.Label(_gaNativeErrorReporting);
+                            GUILayout.EndHorizontal();
+
+                            GUILayout.BeginHorizontal();
+                            GUILayout.Label("", GUILayout.Width(-18));
                             ga.EnableSDKInitEvent = EditorGUILayout.Toggle("", ga.EnableSDKInitEvent, GUILayout.Width(layoutWidth));
-                            GUILayout.EndHorizontal();
-
-                            GUILayout.BeginHorizontal();
-                            GUILayout.Label(_enableAppBootTracking);
-                            ga.EnableAppBootTimeTracking = EditorGUILayout.Toggle("", ga.EnableAppBootTimeTracking, GUILayout.Width(layoutWidth));
+                            GUILayout.Label(_enableSDKInitEvent);
                             GUILayout.EndHorizontal();
 
                         GUILayout.EndVertical();
@@ -1626,24 +1579,45 @@ namespace GameAnalyticsSDK.Editor
 
                             GUILayout.BeginHorizontal();
                             GUILayout.Space(-12);
-                            EditorGUILayout.LabelField("Session Performance", EditorStyles.boldLabel);
+                            EditorGUILayout.LabelField("Session Performance Event", EditorStyles.boldLabel);
                             GUILayout.EndHorizontal();
 
                             EditorGUILayout.Space();
 
                             GUILayout.BeginHorizontal();
-                            GUILayout.Label(_enableHealthEvent);
-                            ga.EnableHealthEvent = EditorGUILayout.Toggle("", ga.EnableHealthEvent, GUILayout.Width(layoutWidth));
-                            GUILayout.EndHorizontal();
-
-                            GUILayout.BeginHorizontal();
-                            GUILayout.Label(_enableFPSHistogram);
+                            GUILayout.Label("", GUILayout.Width(-18));
                             ga.EnableFPSHistogram = EditorGUILayout.Toggle("", ga.EnableFPSHistogram, GUILayout.Width(layoutWidth));
+                            GUILayout.Label(_enableFPSHistogram);
                             GUILayout.EndHorizontal();
 
                             GUILayout.BeginHorizontal();
-                            GUILayout.Label(_enableMemoryHistogram);
+                            GUILayout.Label("", GUILayout.Width(-18));
                             ga.EnableMemoryHistogram = EditorGUILayout.Toggle("", ga.EnableMemoryHistogram, GUILayout.Width(layoutWidth));
+                            GUILayout.Label(_enableMemoryHistogram);
+                            GUILayout.EndHorizontal();
+
+                        GUILayout.EndVertical();
+
+                        EditorGUILayout.Space();
+                        EditorGUILayout.Space();
+
+                        GUILayout.BeginVertical("EXPERIMENTAL");
+
+                            GUILayout.BeginHorizontal();
+                            GUILayout.Space(-12);
+                            EditorGUILayout.LabelField("EXPERIMENTAL", EditorStyles.boldLabel);
+                            GUILayout.EndHorizontal();
+
+                            GUILayout.BeginHorizontal();
+                            GUILayout.Label("", GUILayout.Width(-18));
+                            ga.EnableHardwareTracking = EditorGUILayout.Toggle("", ga.EnableHardwareTracking, GUILayout.Width(layoutWidth));
+                            GUILayout.Label(_enableHardwareTracking);
+                            GUILayout.EndHorizontal();
+
+                            GUILayout.BeginHorizontal();
+                            GUILayout.Label("", GUILayout.Width(-18));
+                            ga.EnableMemoryTracking = EditorGUILayout.Toggle("", ga.EnableMemoryTracking, GUILayout.Width(layoutWidth));
+                            GUILayout.Label(_enableMemoryTracking);
                             GUILayout.EndHorizontal();
 
                         GUILayout.EndVertical();
@@ -1674,142 +1648,6 @@ namespace GameAnalyticsSDK.Editor
             }
         }
 
-        public static void SignupUser(GameAnalyticsSDK.Setup.Settings ga, GA_SignUp signup)
-        {
-            Hashtable jsonTable = new Hashtable();
-            jsonTable["email"] = ga.EmailGA;
-            jsonTable["password"] = ga.PasswordGA;
-            jsonTable["password_confirm"] = signup.PasswordConfirm;
-            jsonTable["first_name"] = signup.FirstName;
-            jsonTable["last_name"] = signup.LastName;
-            jsonTable["studio_name"] = ga.StudioName;
-            jsonTable["org_name"] = ga.OrganizationName;
-            jsonTable["org_identifier"] = ga.OrganizationIdentifier;
-            jsonTable["email_opt_out"] = signup.EmailOptIn;
-            jsonTable["accept_terms"] = signup.AcceptedTerms;
-
-            byte[] data = System.Text.Encoding.UTF8.GetBytes(GA_MiniJSON.Serialize(jsonTable));
-
-#if UNITY_2017_1_OR_NEWER
-            UnityWebRequest www = new UnityWebRequest(_gaUrl + "user", UnityWebRequest.kHttpVerbPOST);
-            UploadHandlerRaw uH = new UploadHandlerRaw(data)
-            {
-                contentType = "application/json"
-            };
-            www.uploadHandler = uH;
-            www.downloadHandler = new DownloadHandlerBuffer();
-            Dictionary<string, string> headers = GA_EditorUtilities.WWWHeaders();
-            foreach (KeyValuePair<string, string> entry in headers)
-            {
-                www.SetRequestHeader(entry.Key, entry.Value);
-            }
-#else
-            WWW www = new WWW(_gaUrl + "user", data, GA_EditorUtilities.WWWHeaders());
-#endif
-
-            GA_ContinuationManager.StartCoroutine(SignupUserFrontend(www, ga, signup), () => www.isDone);
-        }
-
-#if UNITY_2017_1_OR_NEWER
-        private static IEnumerator SignupUserFrontend(UnityWebRequest www, GameAnalyticsSDK.Setup.Settings ga, GA_SignUp signup)
-#else
-        private static IEnumerator<WWW> SignupUserFrontend(WWW www, Settings ga, GA_SignUp signup)
-#endif
-        {
-#if UNITY_2017_1_OR_NEWER
-
-#if UNITY_2017_2_OR_NEWER
-            yield return www.SendWebRequest();
-#else
-            yield return www.Send();
-#endif
-            while (!www.isDone)
-                yield return null;
-#else
-            yield return www;
-#endif
-
-            try
-            {
-                IDictionary<string, object> returnParam = null;
-                string error = "";
-#if UNITY_2017_1_OR_NEWER
-                string text = www.downloadHandler.text;
-#else
-                string text = www.text;
-#endif
-                if (!string.IsNullOrEmpty(text))
-                {
-                    returnParam = GA_MiniJSON.Deserialize(text) as IDictionary<string, object>;
-                    if (returnParam.ContainsKey("errors"))
-                    {
-                        IList<object> errorList = returnParam["errors"] as IList<object>;
-                        if (errorList != null && errorList.Count > 0)
-                        {
-                            IDictionary<string, object> errors = errorList[0] as IDictionary<string, object>;
-                            if (errors.ContainsKey("msg"))
-                            {
-                                error = errors["msg"].ToString();
-                            }
-                        }
-                    }
-                }
-
-#if UNITY_2020_1_OR_NEWER
-                if (!(www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError))
-#elif UNITY_2017_1_OR_NEWER
-                if (!(www.isNetworkError || www.isHttpError))
-#else
-                if (string.IsNullOrEmpty(www.error))
-#endif
-                {
-                    if (!String.IsNullOrEmpty(error))
-                    {
-                        Debug.LogError(error);
-                        SetLoginStatus("Failed to sign up.", ga);
-                        signup.SignUpFailed();
-                    }
-                    else if (returnParam != null)
-                    {
-                        IList<object> resultList = returnParam["results"] as IList<object>;
-                        IDictionary<string, object> results = resultList[0] as IDictionary<string, object>;
-                        ga.TokenGA = results["token"].ToString();
-                        ga.ExpireTime = results["exp"].ToString();
-
-                        ga.JustSignedUp = true;
-
-                        //ga.SignUpOpen = false;
-
-                        ga.Organizations = null;
-                        SetLoginStatus("Signed up. Getting data.", ga);
-
-                        GetUserData(ga);
-                        signup.SignUpComplete();
-                    }
-                }
-#if UNITY_5_4_OR_NEWER
-                else if(www.responseCode == 301 || www.responseCode == 404 || www.responseCode == 410)
-                {
-                    Debug.LogError("Failed to sign up. GameAnalytics request not successful. API was changed. Please update your SDK to the latest version: " + www.error + " " + error);
-                    SetLoginStatus("Failed to sign up. GameAnalytics request not successful. API was changed. Please update your SDK to the latest version.", ga);
-                    signup.SignUpFailed();
-                }
-#endif
-                else
-                {
-                    Debug.LogError("Failed to sign up: " + www.error + " " + error);
-                    SetLoginStatus("Failed to sign up.", ga);
-                    signup.SignUpFailed();
-                }
-            }
-            catch
-            {
-                Debug.LogError("Failed to sign up");
-                SetLoginStatus("Failed to sign up.", ga);
-                signup.SignUpFailed();
-            }
-        }
-
         private static void LoginUser(GameAnalyticsSDK.Setup.Settings ga)
         {
             Hashtable jsonTable = new Hashtable();
@@ -1818,7 +1656,6 @@ namespace GameAnalyticsSDK.Editor
 
             byte[] data = System.Text.Encoding.UTF8.GetBytes(GA_MiniJSON.Serialize(jsonTable));
 
-#if UNITY_2017_1_OR_NEWER
             UnityWebRequest www = new UnityWebRequest(_gaUrl + "token", UnityWebRequest.kHttpVerbPOST);
             UploadHandlerRaw uH = new UploadHandlerRaw(data)
             {
@@ -1832,44 +1669,31 @@ namespace GameAnalyticsSDK.Editor
             {
                 www.SetRequestHeader(entry.Key, entry.Value);
             }
-#else
-            WWW www = new WWW(_gaUrl + "token", data, GA_EditorUtilities.WWWHeaders());
-#endif
+
             GA_ContinuationManager.StartCoroutine(LoginUserFrontend(www, ga), () => www.isDone);
         }
 
-#if UNITY_2017_1_OR_NEWER
+
         private static IEnumerator LoginUserFrontend(UnityWebRequest www, GameAnalyticsSDK.Setup.Settings ga)
-#else
-        private static IEnumerator<WWW> LoginUserFrontend(WWW www, Settings ga)
-#endif
         {
-#if UNITY_2017_1_OR_NEWER
-#if UNITY_2017_2_OR_NEWER
+
             yield return www.SendWebRequest();
-#else
-            yield return www.Send();
-#endif
+
             while (!www.isDone)
                 yield return null;
-#else
-            yield return www;
-#endif
 
             try
             {
                 string error = "";
                 IDictionary<string, object> returnParam = null;
-#if UNITY_2017_1_OR_NEWER
+
                 string text = www.downloadHandler.text;
-#else
-                string text = www.text;
-#endif
+
                 if (!string.IsNullOrEmpty(text))
                 {
                     returnParam = GA_MiniJSON.Deserialize(text) as IDictionary<string, object>;
 
-                    if (returnParam.ContainsKey("errors"))
+                    if (returnParam != null && returnParam.ContainsKey("errors"))
                     {
                         IList<object> errorList = returnParam["errors"] as IList<object>;
                         if (errorList != null && errorList.Count > 0)
@@ -1893,7 +1717,6 @@ namespace GameAnalyticsSDK.Editor
                 {
                     if (!String.IsNullOrEmpty(error))
                     {
-                        Debug.LogError(error);
                         SetLoginStatus("Failed to login.", ga);
                     }
                     else if (returnParam != null)
@@ -1901,75 +1724,58 @@ namespace GameAnalyticsSDK.Editor
                         IList<object> resultList = returnParam["results"] as IList<object>;
                         IDictionary<string, object> results = resultList[0] as IDictionary<string, object>;
                         ga.TokenGA = results["token"].ToString();
-                        ga.ExpireTime = results["exp"].ToString();
 
                         SetLoginStatus("Logged in. Getting data.", ga);
 
                         GetUserData(ga);
                     }
                 }
-#if UNITY_5_4_OR_NEWER
                 else if (www.responseCode == 301 || www.responseCode == 404 || www.responseCode == 410)
                 {
                     Debug.LogError("Failed to login. GameAnalytics request not successful. API was changed. Please update your SDK to the latest version: " + www.error + " " + error);
                     SetLoginStatus("Failed to login. GameAnalytics request not successful. API was changed. Please update your SDK to the latest version.", ga);
                 }
-#endif
                 else
                 {
                     Debug.LogError("Failed to login: " + www.error + " " + error);
                     SetLoginStatus("Failed to login.", ga);
                 }
             }
-            catch
+            catch(Exception e)
             {
-                Debug.LogError("Failed to login");
+                Debug.LogError("Failed to login:" + e.ToString());
+                Debug.LogError(e.StackTrace);
                 SetLoginStatus("Failed to login.", ga);
             }
         }
 
         private static void GetUserData(GameAnalyticsSDK.Setup.Settings ga)
         {
-#if UNITY_2017_1_OR_NEWER
             UnityWebRequest www = UnityWebRequest.Get(_gaUrl + "user");
             Dictionary<string, string> headers = GA_EditorUtilities.WWWHeadersWithAuthorization(ga.TokenGA);
             foreach (KeyValuePair<string, string> entry in headers)
             {
                 www.SetRequestHeader(entry.Key, entry.Value);
             }
-#else
-            WWW www = new WWW(_gaUrl + "user", null, GA_EditorUtilities.WWWHeadersWithAuthorization(ga.TokenGA));
-#endif
+
             GA_ContinuationManager.StartCoroutine(GetUserDataFrontend(www, ga), () => www.isDone);
         }
 
-#if UNITY_2017_1_OR_NEWER
+
         private static IEnumerator GetUserDataFrontend(UnityWebRequest www, GameAnalyticsSDK.Setup.Settings ga)
-#else
-        private static IEnumerator<WWW> GetUserDataFrontend(WWW www, Settings ga)
-#endif
         {
-#if UNITY_2017_1_OR_NEWER
-#if UNITY_2017_2_OR_NEWER
             yield return www.SendWebRequest();
-#else
-            yield return www.Send();
-#endif
+
             while (!www.isDone)
                 yield return null;
-#else
-            yield return www;
-#endif
 
             try
             {
                 IDictionary<string, object> returnParam = null;
                 string error = "";
-#if UNITY_2017_1_OR_NEWER
+
                 string text = www.downloadHandler.text;
-#else
-                string text = www.text;
-#endif
+
                 if (!string.IsNullOrEmpty(text))
                 {
                     returnParam = GA_MiniJSON.Deserialize(text) as IDictionary<string, object>;
@@ -1991,8 +1797,6 @@ namespace GameAnalyticsSDK.Editor
                 if (!(www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError))
 #elif UNITY_2017_1_OR_NEWER
                 if (!(www.isNetworkError || www.isHttpError))
-#else
-                if (string.IsNullOrEmpty(www.error))
 #endif
                 {
                     if (!String.IsNullOrEmpty(error))
@@ -2086,323 +1890,6 @@ namespace GameAnalyticsSDK.Editor
             }
         }
 
-        public static void CreateGame(GameAnalyticsSDK.Setup.Settings ga, GA_SignUp signup, int organizationIndex, int studioIndex, string gameTitle, string googlePlayPublicKey, RuntimePlatform platform, AppFiguresGame appFiguresGame)
-        {
-            Hashtable jsonTable = new Hashtable();
-
-            if (appFiguresGame != null)
-            {
-                jsonTable["title"] = gameTitle;
-                jsonTable["store_id"] = appFiguresGame.AppID;
-                jsonTable["store"] = appFiguresGame.Store;
-                jsonTable["googleplay_key"] = string.IsNullOrEmpty(googlePlayPublicKey) ? null : googlePlayPublicKey;
-            }
-            else
-            {
-                jsonTable["title"] = gameTitle;
-                jsonTable["store_id"] = null;
-                jsonTable["store"] = null;
-                jsonTable["googleplay_key"] = string.IsNullOrEmpty(googlePlayPublicKey) ? null : googlePlayPublicKey;
-            }
-
-            byte[] data = System.Text.Encoding.UTF8.GetBytes(GA_MiniJSON.Serialize(jsonTable));
-
-            string url = _gaUrl + "studios/" + ga.Organizations[organizationIndex].Studios[studioIndex].ID + "/games";
-#if UNITY_2017_1_OR_NEWER
-            UnityWebRequest www = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST);
-            UploadHandlerRaw uH = new UploadHandlerRaw(data)
-            {
-                contentType = "application/json"
-            };
-            www.uploadHandler = uH;
-            www.downloadHandler = new DownloadHandlerBuffer();
-            Dictionary<string, string> headers = GA_EditorUtilities.WWWHeadersWithAuthorization(ga.TokenGA);
-            foreach (KeyValuePair<string, string> entry in headers)
-            {
-                www.SetRequestHeader(entry.Key, entry.Value);
-            }
-#else
-            WWW www = new WWW(url, data, GA_EditorUtilities.WWWHeadersWithAuthorization(ga.TokenGA));
-#endif
-            GA_ContinuationManager.StartCoroutine(CreateGameFrontend(www, ga, signup, platform, appFiguresGame), () => www.isDone);
-        }
-
-#if UNITY_2017_1_OR_NEWER
-        private static IEnumerator CreateGameFrontend(UnityWebRequest www, GameAnalyticsSDK.Setup.Settings ga, GA_SignUp signup, RuntimePlatform platform, AppFiguresGame appFiguresGame)
-#else
-        private static IEnumerator<WWW> CreateGameFrontend(WWW www, Settings ga, GA_SignUp signup, RuntimePlatform platform, AppFiguresGame appFiguresGame)
-#endif
-        {
-#if UNITY_2017_1_OR_NEWER
-#if UNITY_2017_2_OR_NEWER
-            yield return www.SendWebRequest();
-#else
-            yield return www.Send();
-#endif
-            while (!www.isDone)
-                yield return null;
-#else
-            yield return www;
-#endif
-
-            try
-            {
-                IDictionary<string, object> returnParam = null;
-                string error = "";
-#if UNITY_2017_1_OR_NEWER
-                string text = www.downloadHandler.text;
-#else
-                string text = www.text;
-#endif
-                if (!string.IsNullOrEmpty(text))
-                {
-                    returnParam = GA_MiniJSON.Deserialize(text) as IDictionary<string, object>;
-                    if (returnParam.ContainsKey("errors"))
-                    {
-                        IList<object> errorList = returnParam["errors"] as IList<object>;
-                        if (errorList != null && errorList.Count > 0)
-                        {
-                            IDictionary<string, object> errors = errorList[0] as IDictionary<string, object>;
-                            if (errors.ContainsKey("msg"))
-                            {
-                                error = errors["msg"].ToString();
-                            }
-                        }
-                    }
-                }
-
-#if UNITY_2020_1_OR_NEWER
-                if (!(www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError))
-#elif UNITY_2017_1_OR_NEWER
-                if (!(www.isNetworkError || www.isHttpError))
-#else
-                if (string.IsNullOrEmpty(www.error))
-#endif
-                {
-                    if (!String.IsNullOrEmpty(error))
-                    {
-                        Debug.LogError(error);
-                        SetLoginStatus("Failed to create game.", ga);
-                        signup.CreateGameFailed();
-                    }
-                    else
-                    {
-                        ga.LastCreatedGamePlatform = platform;
-                        GetUserData(ga);
-                        signup.CreateGameComplete();
-                    }
-                }
-#if UNITY_5_4_OR_NEWER
-                else if (www.responseCode == 301 || www.responseCode == 404 || www.responseCode == 410)
-                {
-                    Debug.LogError("Failed to create game. GameAnalytics request not successful. API was changed. Please update your SDK to the latest version: " + www.error + " " + error);
-                    SetLoginStatus("Failed to create game. GameAnalytics request not successful. API was changed. Please update your SDK to the latest version.", ga);
-                }
-#endif
-                else
-                {
-                    Debug.LogError("Failed to create game: " + www.error + " " + error);
-                    SetLoginStatus("Failed to create game.", ga);
-                    signup.CreateGameFailed();
-                }
-            }
-            catch
-            {
-                Debug.LogError("Failed to create game");
-                SetLoginStatus("Failed to create game.", ga);
-                signup.CreateGameFailed();
-            }
-        }
-
-        public static void GetAppFigures(GameAnalyticsSDK.Setup.Settings ga, GA_SignUp signup)
-        {
-#if UNITY_2017_1_OR_NEWER
-            UnityWebRequest www = UnityWebRequest.Get(_gaUrl + "apps/search?query=" + UnityWebRequest.EscapeURL(ga.GameName));
-            Dictionary<string, string> headers = GA_EditorUtilities.WWWHeadersWithAuthorization(ga.TokenGA);
-            foreach (KeyValuePair<string, string> pair in headers)
-            {
-                www.SetRequestHeader(pair.Key, pair.Value);
-            }
-            GA_ContinuationManager.StartCoroutine(GetAppFiguresFrontend(www, ga, signup, ga.GameName), () => www.isDone);
-#else
-            WWW www = new WWW(_gaUrl + "apps/search?query=" + WWW.EscapeURL(ga.GameName), null, GA_EditorUtilities.WWWHeadersWithAuthorization(ga.TokenGA));
-            GA_ContinuationManager.StartCoroutine(GetAppFiguresFrontend(www, ga, signup, ga.GameName), () => www.isDone);
-#endif
-
-            if (ga.AmazonIcon == null)
-            {
-#if UNITY_2017_1_OR_NEWER
-                UnityWebRequest wwwAmazon = UnityWebRequestTexture.GetTexture("http://public.gameanalytics.com/resources/images/sdk_doc/appstore_icons/amazon.png");
-                GA_ContinuationManager.StartCoroutine(signup.GetAppStoreIconTexture(wwwAmazon, "amazon_appstore", signup), () => wwwAmazon.isDone);
-#else
-                WWW wwwAmazon = new WWW("http://public.gameanalytics.com/resources/images/sdk_doc/appstore_icons/amazon.png");
-                GA_ContinuationManager.StartCoroutine(signup.GetAppStoreIconTexture(wwwAmazon, "amazon_appstore", signup), () => wwwAmazon.isDone);
-#endif
-            }
-
-            if (ga.GooglePlayIcon == null)
-            {
-#if UNITY_2017_1_OR_NEWER
-                UnityWebRequest wwwGoogle = UnityWebRequestTexture.GetTexture("http://public.gameanalytics.com/resources/images/sdk_doc/appstore_icons/google_play.png");
-                GA_ContinuationManager.StartCoroutine(signup.GetAppStoreIconTexture(wwwGoogle, "google_play", signup), () => wwwGoogle.isDone);
-#else
-                WWW wwwGoogle = new WWW("http://public.gameanalytics.com/resources/images/sdk_doc/appstore_icons/google_play.png");
-                GA_ContinuationManager.StartCoroutine(signup.GetAppStoreIconTexture(wwwGoogle, "google_play", signup), () => wwwGoogle.isDone);
-#endif
-            }
-
-            if (ga.iosIcon == null)
-            {
-#if UNITY_2017_1_OR_NEWER
-                UnityWebRequest wwwIos = UnityWebRequestTexture.GetTexture("http://public.gameanalytics.com/resources/images/sdk_doc/appstore_icons/ios.png");
-                GA_ContinuationManager.StartCoroutine(signup.GetAppStoreIconTexture(wwwIos, "apple:ios", signup), () => wwwIos.isDone);
-#else
-                WWW wwwIos = new WWW("http://public.gameanalytics.com/resources/images/sdk_doc/appstore_icons/ios.png");
-                GA_ContinuationManager.StartCoroutine(signup.GetAppStoreIconTexture(wwwIos, "apple:ios", signup), () => wwwIos.isDone);
-#endif
-            }
-
-            if (ga.macIcon == null)
-            {
-#if UNITY_2017_1_OR_NEWER
-                UnityWebRequest wwwMac = UnityWebRequestTexture.GetTexture("http://public.gameanalytics.com/resources/images/sdk_doc/appstore_icons/mac.png");
-                GA_ContinuationManager.StartCoroutine(signup.GetAppStoreIconTexture(wwwMac, "apple:mac", signup), () => wwwMac.isDone);
-#else
-                WWW wwwMac = new WWW("http://public.gameanalytics.com/resources/images/sdk_doc/appstore_icons/mac.png");
-                GA_ContinuationManager.StartCoroutine(signup.GetAppStoreIconTexture(wwwMac, "apple:mac", signup), () => wwwMac.isDone);
-#endif
-            }
-
-            if (ga.windowsPhoneIcon == null)
-            {
-#if UNITY_2017_1_OR_NEWER
-                UnityWebRequest wwwWindowsPhone = UnityWebRequestTexture.GetTexture("http://public.gameanalytics.com/resources/images/sdk_doc/appstore_icons/windows_phone.png");
-                GA_ContinuationManager.StartCoroutine(signup.GetAppStoreIconTexture(wwwWindowsPhone, "windows_phone", signup), () => wwwWindowsPhone.isDone);
-#else
-                WWW wwwWindowsPhone = new WWW("http://public.gameanalytics.com/resources/images/sdk_doc/appstore_icons/windows_phone.png");
-                GA_ContinuationManager.StartCoroutine(signup.GetAppStoreIconTexture(wwwWindowsPhone, "windows_phone", signup), () => wwwWindowsPhone.isDone);
-#endif
-            }
-        }
-
-#if UNITY_2017_1_OR_NEWER
-        private static IEnumerator GetAppFiguresFrontend(UnityWebRequest www, GameAnalyticsSDK.Setup.Settings ga, GA_SignUp signup, string gameName)
-#else
-        private static IEnumerator<WWW> GetAppFiguresFrontend(WWW www, Settings ga, GA_SignUp signup, string gameName)
-#endif
-        {
-#if UNITY_2017_1_OR_NEWER
-#if UNITY_2017_2_OR_NEWER
-            yield return www.SendWebRequest();
-#else
-            yield return www.Send();
-#endif
-            while (!www.isDone)
-                yield return null;
-#else
-            yield return www;
-#endif
-
-            try
-            {
-                IDictionary<string, object> returnParam = null;
-                string error = "";
-                string text;
-#if UNITY_2017_1_OR_NEWER
-                text = www.downloadHandler.text;
-#else
-                text = www.text;
-#endif
-                if (!string.IsNullOrEmpty(text))
-                {
-                    returnParam = GA_MiniJSON.Deserialize(text) as IDictionary<string, object>;
-                    if (returnParam.ContainsKey("errors"))
-                    {
-                        IList<object> errorList = returnParam["errors"] as IList<object>;
-                        if (errorList != null && errorList.Count > 0)
-                        {
-                            IDictionary<string, object> errors = errorList[0] as IDictionary<string, object>;
-                            if (errors.ContainsKey("msg"))
-                            {
-                                error = errors["msg"].ToString();
-                            }
-                        }
-                    }
-                }
-
-#if UNITY_2020_1_OR_NEWER
-                if (!(www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError))
-#elif UNITY_2017_1_OR_NEWER
-                if (!(www.isNetworkError || www.isHttpError))
-#else
-                if (string.IsNullOrEmpty(www.error))
-#endif
-                {
-                    if (!String.IsNullOrEmpty(error))
-                    {
-                        Debug.LogError(error);
-                        SetLoginStatus("Failed to get app.", ga);
-                    }
-                    else if (returnParam != null)
-                    {
-                        IList<object> resultList = returnParam["results"] as IList<object>;
-
-                        List<AppFiguresGame> appFiguresGames = new List<AppFiguresGame>();
-                        for (int s = 0; s < resultList.Count; s++)
-                        {
-                            IDictionary<string, object> result = resultList[s] as IDictionary<string, object>;
-
-                            string name = result["title"].ToString();
-                            string appID = result["store_id"].ToString();
-                            string store = result["store"].ToString();
-                            string developer = result["developer"].ToString();
-                            string iconUrl = result["image"].ToString();
-
-                            if (store.Equals("apple") || store.Equals("google_play") || store.Equals("amazon_appstore"))
-                            {
-                                appFiguresGames.Add(new AppFiguresGame(name, appID, store, developer, iconUrl, signup));
-                            }
-                        }
-
-                        signup.AppFigComplete(gameName, appFiguresGames);
-                    }
-                }
-                else
-                {
-                    // expired tokens / not signed in
-#if UNITY_2017_1_OR_NEWER
-                    if (www.responseCode == 401)
-#else
-                    if (www.responseHeaders["status"] != null && www.responseHeaders["status"].Contains("401"))
-#endif
-                    {
-                        Selection.objects = new UnityEngine.Object[] { AssetDatabase.LoadAssetAtPath("Assets/Resources/GameAnalytics/Settings.asset", typeof(GameAnalyticsSDK.Setup.Settings)) };
-                        ga.CurrentInspectorState = GameAnalyticsSDK.Setup.Settings.InspectorStates.Account;
-                        string message = "Please sign-in and try again to search for your game in the stores.";
-                        SetLoginStatus(message, ga);
-                        Debug.LogError(message);
-                    }
-#if UNITY_5_4_OR_NEWER
-                    else if (www.responseCode == 301 || www.responseCode == 404 || www.responseCode == 410)
-                    {
-                        Debug.LogError("Failed to find app. GameAnalytics request not successful. API was changed. Please update your SDK to the latest version: " + www.error + " " + error);
-                        SetLoginStatus("Failed to find app. GameAnalytics request not successful. API was changed. Please update your SDK to the latest version.", ga);
-                    }
-#endif
-                    else
-                    {
-                        Debug.LogError("Failed to find app: " + www.error + " " + text);
-                        SetLoginStatus("Failed to find app.", ga);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogError("Failed to find app: " + e.ToString() + ", " + e.StackTrace);
-                SetLoginStatus("Failed to find app.", ga);
-            }
-        }
-
         private static void SelectOrganization(int index, GameAnalyticsSDK.Setup.Settings ga, int platform)
         {
             ga.SelectedOrganization[platform] = index;
@@ -2482,11 +1969,8 @@ namespace GameAnalyticsSDK.Editor
             }
 
             GameAnalyticsSDK.Setup.Settings.CheckingForUpdates = true;
-#if UNITY_2017_1_OR_NEWER
+
             UnityWebRequest www = UnityWebRequest.Get("https://s3.amazonaws.com/public.gameanalytics.com/sdk_status/current.json");
-#else
-            WWW www = new WWW("https://s3.amazonaws.com/public.gameanalytics.com/sdk_status/current.json");
-#endif
             GA_ContinuationManager.StartCoroutine(CheckForUpdatesCoroutine(www), () => www.isDone);
         }
 
@@ -2500,23 +1984,12 @@ namespace GameAnalyticsSDK.Editor
             GA_ContinuationManager.StartCoroutine(GetChangeLogsAndShowUpdateWindowCoroutine(www, newVersion), () => www.isDone);
         }
 
-#if UNITY_2017_1_OR_NEWER
         private static IEnumerator CheckForUpdatesCoroutine(UnityWebRequest www)
-#else
-        private static IEnumerator CheckForUpdatesCoroutine(WWW www)
-#endif
         {
-#if UNITY_2017_1_OR_NEWER
-#if UNITY_2017_2_OR_NEWER
             yield return www.SendWebRequest();
-#else
-            yield return www.Send();
-#endif
+
             while (!www.isDone)
                 yield return null;
-#else
-            yield return www;
-#endif
 
             try
             {
@@ -2709,6 +2182,7 @@ namespace GameAnalyticsSDK.Editor
         // [majorVersion].[minorVersion].[patchnumber]
         static bool IsNewVersion(string newVersion, string currentVersion)
         {
+
             int[] newVersionInts = GetVersionIntegersFromString(newVersion);
             int[] currentVersionInts = GetVersionIntegersFromString(currentVersion);
 
@@ -2718,27 +2192,27 @@ namespace GameAnalyticsSDK.Editor
             }
 
             // compare majorVersion
-            if(newVersionInts[0] > currentVersionInts[0])
+            if(newVersionInts[MAJOR_V] > currentVersionInts[MAJOR_V])
             {
                 return true;
             }
-            else if(newVersionInts[0] < currentVersionInts[0])
+            else if(newVersionInts[MAJOR_V] < currentVersionInts[MAJOR_V])
             {
                 return false;
             }
 
             // compare minorVersion (majorVersion is unchanged)
-            if(newVersionInts[1] > currentVersionInts[1])
+            if(newVersionInts[MINOR_V] > currentVersionInts[MINOR_V])
             {
                 return true;
             }
-            else if(newVersionInts[1] < currentVersionInts[1])
+            else if(newVersionInts[MINOR_V] < currentVersionInts[MINOR_V])
             {
                 return false;
             }
 
             // compare patchnumber (majorVersion, minorVersion is unchanged)
-            if(newVersionInts[2] > currentVersionInts[2])
+            if(newVersionInts[PATCH_V] > currentVersionInts[PATCH_V])
             {
                 return true;
             }
@@ -2752,18 +2226,18 @@ namespace GameAnalyticsSDK.Editor
         static int[] GetVersionIntegersFromString(string versionString)
         {
             string[] versionNumbers = versionString.Split('.');
-            if(versionNumbers.Length != 3)
+            if(versionNumbers.Length != ALL_V)
             {
                 return null;
             }
 
             // container for validated version integers
-            int[] validatedVersionNumbers = new int[3];
+            int[] validatedVersionNumbers = new int[ALL_V];
 
             // verify int parsing
-            bool isIntMajorVersion = int.TryParse(versionNumbers[0], out validatedVersionNumbers[0]);
-            bool isIntMinorVersion = int.TryParse(versionNumbers[1], out validatedVersionNumbers[1]);
-            bool isIntPatchnumber = int.TryParse(versionNumbers[2], out validatedVersionNumbers[2]);
+            bool isIntMajorVersion = int.TryParse(versionNumbers[MAJOR_V], out validatedVersionNumbers[MAJOR_V]);
+            bool isIntMinorVersion = int.TryParse(versionNumbers[MINOR_V], out validatedVersionNumbers[MINOR_V]);
+            bool isIntPatchnumber  = int.TryParse(versionNumbers[PATCH_V], out validatedVersionNumbers[PATCH_V]);
 
             if(isIntMajorVersion && isIntMinorVersion && isIntPatchnumber)
             {
@@ -2775,33 +2249,19 @@ namespace GameAnalyticsSDK.Editor
             }
         }
 
-#region Button actions
-
-        private void OpenSignUp()
-        {
-            GameAnalyticsSDK.Setup.Settings ga = target as GameAnalyticsSDK.Setup.Settings;
-            ga.IntroScreen = false;
-            ga.CurrentInspectorState = GameAnalyticsSDK.Setup.Settings.InspectorStates.Account;
-            ga.SignUpOpen = true;
-
-            GA_SignUp signup = ScriptableObject.CreateInstance<GA_SignUp>();
-            signup.maxSize = new Vector2(640, 600);
-            signup.minSize = new Vector2(640, 600);
-            signup.titleContent = new GUIContent("GameAnalytics - Sign up for FREE");
-            signup.ShowUtility();
-            signup.Opened();
-        }
-
-#endregion // Button actions
-
 #region Helper functions
+
+        private static void OpenSignUp()
+        {
+            Application.OpenURL(_gaSignUpUrl);
+        }
 
         private static void OpenSignUpSwitchToGuideStep()
         {
             GA_SignUp signup = ScriptableObject.CreateInstance<GA_SignUp>();
             signup.maxSize = new Vector2(640, 600);
             signup.minSize = new Vector2(640, 600);
-            signup.titleContent = new GUIContent("GameAnalytics - Sign up for FREE");
+            signup.titleContent = new GUIContent("GameAnalytics - Setup Guide");
             signup.ShowUtility();
             signup.Opened();
 

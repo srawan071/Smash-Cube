@@ -23,11 +23,9 @@ namespace ProMaxUtils
 
         [SerializeField]private cubeInsantiater _cubeInstianter;
 
-        private int _baseMap;
         [SerializeField]
         private GameObject UpgradeBtn;
 
-        private float _offset=0.003f;
 
       [SerializeField]  private ShowModel _bestCube;
       [SerializeField]  private ShowModel _levelUpgrade;

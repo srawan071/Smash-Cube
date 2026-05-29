@@ -19,7 +19,6 @@ namespace ProMaxUtils
         public bool Vibrate;
         [SerializeField]
         private Sounds _sounds;
-        [SerializeField]
        
         private void Awake()
         {

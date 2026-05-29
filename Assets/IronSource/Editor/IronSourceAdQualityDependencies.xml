@@ -1,8 +1,8 @@
 <dependencies>
-  <unityversion>7.14.2</unityversion>
+  <unityversion>7.19.2</unityversion>
 
   <androidPackages>
-    <androidPackage spec="com.ironsource:adqualitysdk:7.14.2">
+    <androidPackage spec="com.ironsource:adqualitysdk:7.19.2">
       <repositories>
         <repository>https://android-sdk.is.com/</repository>
       </repositories>
@@ -10,7 +10,7 @@
   </androidPackages>
 
   <iosPods>
-    <iosPod name="IronSourceAdQualitySDK" version="7.14.2">
+    <iosPod name="IronSourceAdQualitySDK" version="7.19.2">
       <sources>
         <source>https://github.com/CocoaPods/Specs</source>
       </sources>

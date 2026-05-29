@@ -206,11 +206,11 @@ namespace ProMaxUtils
 
         public void ResBtn()
         {
-            FindObjectOfType<Quality>().ResolutionButton();
+            FindAnyObjectByType<Quality>().ResolutionButton();
         }
         public void FpsBtn()
         {
-            FindObjectOfType<Quality>().FPSButton();
+           FindAnyObjectByType<Quality>().FPSButton();
         }
 
 

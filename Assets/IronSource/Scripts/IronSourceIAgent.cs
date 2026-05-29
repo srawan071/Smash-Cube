@@ -115,7 +115,17 @@ public interface IronSourceIAgent
 
 	bool isBannerPlacementCapped(string placementName);
 
+
+	 float getMaximalAdaptiveHeight(float width);
+	
+	 float getDeviceScreenWidth();
+
+	
+	//******************* Segment API *******************//
+
 	void setSegment(IronSourceSegment segment);
+	
+	//******************* Consent API *******************//
 
 	void setConsent(bool consent);
 
@@ -132,6 +142,7 @@ public interface IronSourceIAgent
 	//******************* TestSuite API *******************//
 
 	void launchTestSuite();
+	
 }
 
 public static class dataSource
@@ -150,6 +161,8 @@ public static class IronSourceAdUnits
 	public static string OFFERWALL { get { return "offerwall"; } }
 
 	public static string BANNER { get { return "banner"; } }
+	
+	
 }
 
 public class IronSourceBannerSize
@@ -158,7 +171,9 @@ public class IronSourceBannerSize
 	private int height;
 	private string description;
 	private bool isAdaptive;
-
+	private ISContainerParams isContainerParams = new ISContainerParams();
+	private bool respectAndroidCutouts;
+	
 	public static IronSourceBannerSize BANNER = new IronSourceBannerSize("BANNER");
 	public static IronSourceBannerSize LARGE = new IronSourceBannerSize("LARGE");
 	public static IronSourceBannerSize RECTANGLE = new IronSourceBannerSize("RECTANGLE");
@@ -187,11 +202,40 @@ public class IronSourceBannerSize
 	{
 		this.isAdaptive = adaptive;
 	}
-
 	public bool IsAdaptiveEnabled()
 	{
 		return this.isAdaptive;
 	}
+
+	/// <summary>
+	///  Set the Container for adaptive banner.
+	/// </summary>
+	/// <param name="setBannerContainerParams">The ability to set the banner container. </param>
+	/// <param name="ISContainerParams">The Container params Width and Height.</param>
+	public void setBannerContainerParams(ISContainerParams parameters)
+	{
+		this.isContainerParams = parameters;
+	}
+
+	public ISContainerParams getBannerContainerParams()
+	{
+		return this.isContainerParams;
+	}
+
+	/// <summary>
+	///  Set Respect for Android Cutouts. https://developer.android.com/develop/ui/views/layout/display-cutout
+	/// </summary>
+	/// <param name="SetRespectAndroidCutouts">Set if to respect the Android Cutouts or not.</param>
+	public void SetRespectAndroidCutouts(bool respectAndroidCutouts)
+	{
+		this.respectAndroidCutouts = respectAndroidCutouts;
+	}
+
+	public bool IsRespectAndroidCutoutsEnabled()
+	{
+		return this.respectAndroidCutouts;
+	}
+
 
 	public string Description { get { return description; } }
 	public int Width { get { return width; } }
@@ -203,3 +247,17 @@ public enum IronSourceBannerPosition
 	TOP = 1,
 	BOTTOM = 2
 };
+
+public class ISContainerParams
+{
+	public float Width { get; set; }
+	public float Height { get; set; }
+
+	public ISContainerParams()
+	{
+		Width = -1;
+		Height = -1;
+	}
+}
+
+

@@ -28,7 +28,6 @@ public class Cube : MonoBehaviour
     [SerializeField]
     private AnimationCurve _curveSwipe,_curveShoot;
     [SerializeField]
-    private bool _col;
     private ObjectPool<Cube> _cubePool;
     private ObjectPool<Cube> _bombPool;
     private bool CollideOnce;
@@ -46,9 +45,9 @@ public class Cube : MonoBehaviour
        // Camera.main.gameObject.SetActive(false);
         _id = GetInstanceID();
 
-        _cubeInstantiater = FindObjectOfType<cubeInsantiater>();
-        _cameraController = FindObjectOfType<CameraController>();
-        _particlePool = FindObjectOfType<ParticlePool>();
+        _cubeInstantiater = FindAnyObjectByType<cubeInsantiater>();
+        _cameraController = FindAnyObjectByType<CameraController>();
+        _particlePool = FindAnyObjectByType<ParticlePool>();
 
         _material = _meshRenderer.material;
 
@@ -56,7 +55,6 @@ public class Cube : MonoBehaviour
         blinkValue = Shader.PropertyToID("_lerp");
 
 
-        _col = true;
        
       
     }
@@ -129,7 +127,7 @@ public class Cube : MonoBehaviour
 
         StartCoroutine(JellyCube(1.75f,_curveSwipe));
         if(_cubeInstantiater._shopData.SkinSide==1)
-            rb.angularDrag = 10; 
+            rb.angularDamping = 10; 
     }
     public void InitializeFirstCubes(int value, Vector2 offset)
     {
@@ -142,7 +140,7 @@ public class Cube : MonoBehaviour
         check = true;
         _material.SetTextureOffset(_basemap, offset);
         _material.SetFloat(blinkValue, 0);
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
       
 
         gameObject.SetActive(true);
@@ -194,9 +192,9 @@ public class Cube : MonoBehaviour
 
             }
         }
-        if (transform.position.z < -.75f && rb.velocity.z < 0)
+        if (transform.position.z < -.75f && rb.linearVelocity.z < 0)
         {
-            rb.velocity = new Vector3(0, 0, 1);
+            rb.linearVelocity = new Vector3(0, 0, 1);
         }
     }
 
@@ -258,12 +256,12 @@ public class Cube : MonoBehaviour
         }
        // angle.Normalize();
         angle /= 2;
-        rb.velocity = Random.value>.1f? new Vector3(angle.x, 7, angle.z): new Vector3(angle.x, Random.Range(8, 15), angle.z);
+        rb.linearVelocity = Random.value>.1f? new Vector3(angle.x, 7, angle.z): new Vector3(angle.x, Random.Range(8, 15), angle.z);
         if(_cubeInstantiater._shopData.SkinSide==0)
         rb.angularVelocity = new Vector3(2, 0, 3);
         else
         {
-            rb.angularDrag = 0;
+            rb.angularDamping = 0;
             rb.angularVelocity = new Vector3(3, 0, 4);
             StartCoroutine(ApplyAngularDrag());
           
@@ -279,10 +277,10 @@ public class Cube : MonoBehaviour
         while (t < 1)
         {
             t += Time.deltaTime*.01f;
-            rb.angularDrag += t * 10;
+            rb.angularDamping += t * 10;
             yield return null;
         }
-        rb.angularDrag = 10;
+        rb.angularDamping = 10;
     }
     private IEnumerator Blink()
     {
@@ -304,7 +302,6 @@ public class Cube : MonoBehaviour
   
     private void EnableCollision()
     {
-        _col = true;
     }
 
    

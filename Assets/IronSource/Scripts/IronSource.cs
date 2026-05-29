@@ -7,7 +7,7 @@ public class IronSource : IronSourceIAgent
 {
 	private IronSourceIAgent _platformAgent;
 	private static IronSource _instance;
-	public static string UNITY_PLUGIN_VERSION = "7.5.2-r";
+	public static string UNITY_PLUGIN_VERSION = "7.9.1-r";
 	private static bool isUnsupportedPlatform;
 
 	private IronSource()
@@ -322,6 +322,23 @@ public class IronSource : IronSourceIAgent
 	{
 		return _platformAgent.isBannerPlacementCapped(placementName);
 
+	}
+
+	/// <summary>
+	///  Get maximal Adaptive Height.
+	/// </summary>
+	/// <param name="width"> The device width </param>
+	public float getMaximalAdaptiveHeight(float width)
+	{
+		return _platformAgent.getMaximalAdaptiveHeight(width);
+	}
+
+	/// <summary>
+	///  Get Device Screen Width.
+	/// </summary>
+	public float getDeviceScreenWidth()
+	{
+		return _platformAgent.getDeviceScreenWidth();
 	}
 
 	public void setSegment(IronSourceSegment segment)
